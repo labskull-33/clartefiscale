@@ -32,6 +32,17 @@
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4338ca; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1.5rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; color: #065f46; }
+        .badge-link { background: #f1f5f9; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; color: #64748b; font-weight: 500; text-decoration: none; }
+        .badge-link:hover { background: #e0e7ff; color: #4338ca; }
+        footer { padding: 0 1.5rem 2rem; }
+        .legal { max-width: 42rem; margin: 0 auto; font-size: 0.85rem; line-height: 1.6; color: #475569; }
+        .legal details { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.9rem 1.1rem; margin-top: 0.75rem; }
+        .legal summary { cursor: pointer; font-weight: 700; color: #0f172a; }
+        .legal h4 { font-size: 0.85rem; font-weight: 700; color: #0f172a; margin: 1rem 0 0.25rem; }
+        .legal p, .legal ul { margin-top: 0.35rem; }
+        .legal ul { padding-left: 1.2rem; }
+        .legal a { color: #4338ca; }
+        .legal .small { text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 1rem; }
     </style>
 </head>
 <body>
@@ -41,9 +52,9 @@
             <span style="font-size: 1.5rem;">🔮</span>
             <span style="font-size: 1.25rem; font-weight: 700;">Clarté<span class="text-violet">Fiscale</span></span>
         </div>
-        <div style="background: #f1f5f9; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; color: #64748b; font-weight: 500;">
+        <a href="#vos-donnees" onclick="document.getElementById('vos-donnees').open = true" class="badge-link">
             🔒 Confidentialité locale absolue
-        </div>
+        </a>
     </header>
 
     <main>
@@ -58,6 +69,9 @@
                 <button onclick="changeScreen('welcome', 'family')" class="btn-violet" style="width: auto; padding-left: 2.5rem; padding-right: 2.5rem;">
                     Trouver mes optimisations ➔
                 </button>
+                <p style="color: #64748b; margin-top: 1.25rem; font-size: 0.8rem;">
+                    🔒 Gratuit, sans compte. Rien de ce que vous saisissez ne quitte votre appareil. <a href="#vos-donnees" onclick="document.getElementById('vos-donnees').open = true" style="color: #4338ca;">En savoir plus</a>
+                </p>
             </div>
 
             <!-- ÉTAPE 1 -->
@@ -250,6 +264,41 @@
 
         </div>
     </main>
+
+    <footer>
+        <div class="legal">
+            <details id="vos-donnees">
+                <summary>🔒 Vos données : ce que devient ce que vous saisissez</summary>
+                <p><strong>En bref : rien ne quitte votre appareil.</strong></p>
+                <ul>
+                    <li><strong>Calcul 100 % local.</strong> Vos réponses (situation de famille, revenus, frais, épargne, dons) sont traitées uniquement par votre navigateur. Elles ne sont envoyées à aucun serveur, à personne, ni à aucune intelligence artificielle.</li>
+                    <li><strong>Aucune conservation.</strong> Rien n'est enregistré, ni sur votre appareil ni ailleurs. Fermer ou recharger la page efface tout.</li>
+                    <li><strong>Aucun compte, aucun cookie, aucun traceur.</strong> Cette page ne contient ni publicité, ni outil de statistiques, ni script provenant d'un autre site.</li>
+                    <li><strong>Aucune donnée sensible demandée.</strong> Ne saisissez jamais votre numéro fiscal, vos identifiants impots.gouv.fr, votre numéro de sécurité sociale ou votre IBAN : l'outil n'en a pas besoin.</li>
+                    <li><strong>Copier le rapport</strong> le place seulement dans le presse-papiers de votre appareil. Vous restez seul(e) à décider où le coller.</li>
+                </ul>
+                <p>Comme aucune donnée personnelle n'est collectée, il n'y a rien à consulter, rectifier ou supprimer chez nous. Pour toute question : <a href="mailto:contact@davidvuillet.fr">contact@davidvuillet.fr</a>.</p>
+            </details>
+
+            <details id="mentions-legales">
+                <summary>⚖️ Mentions légales</summary>
+                <h4>Éditeur</h4>
+                <p>ClartéFiscale (davidvuillet.fr/clartefiscale/) est édité par David Vuillet, à titre personnel et non professionnel. Contact : <a href="mailto:contact@davidvuillet.fr">contact@davidvuillet.fr</a>. Directeur de la publication : David Vuillet.</p>
+                <p>Comme le permet l'article 6-III-2 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, l'éditeur, personne physique non professionnelle, ne publie pas son adresse. Ses coordonnées complètes ont été communiquées à l'hébergeur.</p>
+                <h4>Hébergeur</h4>
+                <p>o2switch, SAS au capital de 100 000 €, Chemin des Pardiaux, 63000 Clermont-Ferrand, France. RCS Clermont-Ferrand 510 909 807. Téléphone : 04 44 44 60 40. <a href="https://www.o2switch.fr" rel="noopener">www.o2switch.fr</a></p>
+                <h4>Nature de l'outil</h4>
+                <p>ClartéFiscale est un outil gratuit d'information et de simulation. Il n'est pas un service de l'administration fiscale (DGFiP) et ne remplace pas le conseil personnalisé d'un professionnel (expert-comptable, avocat fiscaliste) ni l'accompagnement de votre centre des finances publiques.</p>
+                <h4>Limites de responsabilité</h4>
+                <p>Les montants affichés sont des <strong>estimations</strong> établies d'après le barème et les règles applicables aux revenus 2025, à partir des seules informations que vous saisissez. Ils peuvent différer de votre imposition réelle. Vérifiez toujours votre situation sur le <a href="https://www.impots.gouv.fr/simulateurs" rel="noopener">simulateur officiel d'impots.gouv.fr</a> avant de valider votre déclaration. Vous restez seul(e) responsable des informations que vous déclarez ; l'éditeur ne saurait être tenu responsable d'une décision prise sur la base de cette simulation.</p>
+                <h4>Propriété intellectuelle</h4>
+                <p>Les textes et le code de ClartéFiscale appartiennent à l'éditeur, sauf mention contraire. Les références aux cases de la déclaration et aux textes officiels (BOFiP, Code général des impôts) sont citées à titre d'information.</p>
+                <p>Mentions légales de l'ensemble du site : <a href="/mentions-legales/">davidvuillet.fr/mentions-legales</a>.</p>
+            </details>
+
+            <p class="small">ClartéFiscale · Gratuit et sans inscription · Estimations sur les revenus 2025 · Mis à jour le 26 septembre 2026</p>
+        </div>
+    </footer>
 
     <style>
         .rep h3 { font-size: 1.1rem; font-weight: 800; color: #4338ca; margin: 1.75rem 0 0.75rem; }
