@@ -1,199 +1,3 @@
-
-Hugging Face's logo Hugging Face
-
-    Models
-    Datasets
-    Spaces
-    Buckets new
-    Docs
-    Enterprise
-    Pricing
-
-Hugging Face is way more fun with friends and colleagues! 🤗 Join an organization
-Spaces:
-labskull
-/
-ClarteFiscale
-Like
-0
-App
-Files
-Community
-Settings
-ClarteFiscale/
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123
-124
-125
-126
-127
-128
-129
-130
-131
-132
-133
-134
-135
-136
-137
-138
-139
-140
-141
-142
-143
-144
-145
-146
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
-⌄
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -201,92 +5,73 @@ ClarteFiscale/
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClartéFiscale - Payez juste ce que vous devez</title>
     <style>
-        /* Base et structure */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; flex-direction: column; display: flex; }
-        
-        /* Charte Graphique Violette & Menthe */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; flex-direction: column; }
         header { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); }
         main { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-        .card { background: #ffffff; border-radius: 1rem; border: 1px solid #e2e8f0; width: 100%; max-width: 42rem; padding: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: all 0.3s; }
-        
-        /* Éléments de texte et boutons */
-        h1 { text-align: center; font-size: 2.25rem; font-weight: 800; color: #0f172a; line-height: 1.2; margin-bottom: 1.5rem; }
+        .card { background: #ffffff; border-radius: 1rem; border: 1px solid #e2e8f0; width: 100%; max-width: 42rem; padding: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); text-align: center; }
+        h1 { font-size: 2.25rem; font-weight: 800; color: #0f172a; line-height: 1.2; margin-bottom: 1.5rem; }
+        h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; text-align: left; }
         .text-violet { color: #4338ca; }
-        .btn-violet { background: #4338ca; color: white; font-weight: 600; padding: 1rem 2rem; border-radius: 0.75rem; border: none; cursor: pointer; width: 100%; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; display: inline-block; }
-        .btn-violet:hover { background: #3730a3; transform: translateY(-1px); }
-        .btn-mint { background: #10b981; color: white; font-weight: 700; padding: 1rem 2rem; border-radius: 0.75rem; border: none; cursor: pointer; width: 100%; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center; display: inline-block; }
+        .btn-violet { background: #4338ca; color: white; font-weight: 600; padding: 1rem 2rem; border-radius: 0.75rem; border: none; cursor: pointer; width: 100%; transition: all 0.2s; display: inline-block; text-align: center; }
+        .btn-violet:hover { background: #3730a3; }
+        .btn-mint { background: #10b981; color: white; font-weight: 700; padding: 1rem 2rem; border-radius: 0.75rem; border: none; cursor: pointer; width: 100%; transition: all 0.2s; display: inline-block; text-align: center; }
         .btn-mint:hover { background: #059669; }
         .btn-outline { background: white; color: #475569; border: 1px solid #cbd5e1; padding: 1rem; border-radius: 0.75rem; font-weight: 500; cursor: pointer; width: 100%; text-align: center; }
         .btn-outline:hover { background: #f8fafc; }
-        
-        /* Formulaire */
         .progress-bar { width: 100%; background: #e2e8f0; height: 4px; border-radius: 9999px; margin-bottom: 1.5rem; overflow: hidden; }
         .progress-fill { background: #10b981; height: 100%; width: 0%; transition: width 0.3s; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
-        .btn-select { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; background: white; cursor: pointer; font-weight: 500; font-size: 0.875rem; transition: all 0.2s; width: 100%; text-align: center; }
-        .btn-select:hover { border-color: #4338ca; }
+        .btn-select { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; background: white; cursor: pointer; font-weight: 500; font-size: 0.875rem; width: 100%; text-align: center; }
         .btn-select.active { border-color: #4338ca; background: #e0e7ff; color: #4338ca; }
-        
-        /* Inputs */
         label { display: block; font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; text-align: left; }
         input[type="number"] { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; outline: none; display: block; background: #ffffff; }
-        input[type="number"]:focus { border-color: #4338ca; }
         .checkbox-container { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-top: 0.5rem; cursor: pointer; width: 100%; text-align: left; }
-        
-        /* Écrans */
         .hidden { display: none !important; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4338ca; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1.5rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Résultats */
-        .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
-        #final-prompt-box { display: none; }
+        .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 1rem; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; color: #065f46; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
             <span style="font-size: 1.5rem;">🔮</span>
             <span style="font-size: 1.25rem; font-weight: 700;">Clarté<span class="text-violet">Fiscale</span></span>
         </div>
         <div style="background: #f1f5f9; padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; color: #64748b; font-weight: 500;">
-            🔒 Confidentialité locale absolue · Sans numéro fiscal
+            🔒 Confidentialité locale absolue
         </div>
     </header>
 
-    <!-- Conteneur -->
     <main>
         <div class="card">
             
-            <!-- Accueil -->
-            <div id="step-welcome" style="text-align: center; padding: 1rem 0;">
+            <!-- ACCUEIL -->
+            <div id="step-welcome">
                 <h1>Payez vos impôts, <br><span class="text-violet">juste vos impôts</span>.<br>Pas un euro de plus.</h1>
                 <p style="color: #64748b; margin-bottom: 2rem; font-size: 1rem; max-width: 28rem; margin-left: auto; margin-right: auto;">
                     Découvrez en 2 minutes les cases cachées, les crédits d'impôt oubliés et les tolérances administratives applicables à votre situation.
                 </p>
-                <button onclick="nextStep('welcome', 'family')" class="btn-violet" style="width: auto; padding-left: 2.5rem; padding-right: 2.5rem;">
+                <button onclick="changeScreen('welcome', 'family')" class="btn-violet" style="width: auto; padding-left: 2.5rem; padding-right: 2.5rem;">
                     Trouver mes optimisations ➔
                 </button>
             </div>
 
-            <!-- Étape 1 : Famille -->
+            <!-- ÉTAPE 1 -->
             <div id="step-family" class="hidden">
                 <div class="progress-bar"><div class="progress-fill" style="width: 25%;"></div></div>
-                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; text-align: left;">Étape 1 : Votre Situation Familiale</h2>
-                
+                <h2>Étape 1 : Votre Situation Familiale</h2>
                 <div style="margin-bottom: 1.5rem;">
                     <label>Quelle est votre situation de famille ?</label>
                     <div class="grid-3">
-                        <button onclick="selectOption('family-status', 'solo')" class="btn-select active" id="opt-solo">Célibataire / Divorcé</button>
-                        <button onclick="selectOption('family-status', 'couple')" class="btn-select" id="opt-couple">Marié(e) / Pacsé(e)</button>
-                        <button onclick="selectOption('family-status', 'alone-kids')" class="btn-select" id="opt-alone-kids">Parent Isolé (Vit seul)</button>
+                        <button onclick="pickStatus('solo')" class="btn-select active" id="opt-solo">Célibataire / Divorcé</button>
+                        <button onclick="pickStatus('couple')" class="btn-select" id="opt-couple">Marié(e) / Pacsé(e)</button>
+                        <button onclick="pickStatus('alone-kids')" class="btn-select" id="opt-alone-kids">Parent Isolé (Vit seul)</button>
                     </div>
                 </div>
-
                 <div style="margin-bottom: 2rem;">
                     <label>Avez-vous des enfants à charge ?</label>
                     <div class="grid-2">
@@ -300,24 +85,20 @@ ClarteFiscale/
                         </div>
                     </div>
                 </div>
-
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
-                    <button onclick="nextStep('family', 'welcome')" class="btn-outline">Retour</button>
-                    <button onclick="nextStep('family', 'income')" class="btn-violet">Continuer ➔</button>
+                    <button onclick="changeScreen('family', 'welcome')" class="btn-outline">Retour</button>
+                    <button onclick="changeScreen('family', 'income')" class="btn-violet">Continuer ➔</button>
                 </div>
             </div>
 
-            <!-- Étape 2 : Revenus -->
+            <!-- ÉTAPE 2 -->
             <div id="step-income" class="hidden">
                 <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
-                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; text-align: left;">Étape 2 : Vos Revenus Principaux</h2>
-                
+                <h2>Étape 2 : Vos Revenus Principaux</h2>
                 <div style="margin-bottom: 1.5rem;">
                     <label>Votre Revenu Net Imposable Annuel (€)</label>
-                    <input type="number" id="input-income" placeholder="Ex: 28500" value="">
-                    <span style="font-size: 0.7rem; color: #94a3b8; display: block; margin-top: 0.25rem; text-align: left;">Trouvable tout en bas de votre fiche de paie de décembre.</span>
+                    <input type="number" id="input-income" placeholder="Ex: 28500" value="0">
                 </div>
-
                 <div style="margin-bottom: 2rem;">
                     <label>Situations particulières cette année :</label>
                     <label class="checkbox-container">
@@ -329,18 +110,26 @@ ClarteFiscale/
                         <span style="font-size: 0.875rem; font-weight: 500;">Je suis Apprenti(e) ou Stagiaire</span>
                     </label>
                 </div>
-
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
-                    <button onclick="nextStep('income', 'family')" class="btn-outline">Retour</button>
-                    <button onclick="nextStep('income', 'work')" class="btn-violet">Continuer ➔</button>
+                    <button onclick="changeScreen('income', 'family')" class="btn-outline">Retour</button>
+                    <button onclick="changeScreen('income', 'work')" class="btn-violet">Continuer ➔</button>
                 </div>
             </div>
 
-            <!-- Étape 3 : Frais Pro -->
+            <!-- ÉTAPE 3 -->
             <div id="step-work" class="hidden">
                 <div class="progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
-
-Commit directly to the main branch
-Open as a pull request to the main branch
-Commit changes
-Upload images, audio, and videos by dragging in the text input, pasting, or clicking here.
+                <h2>Étape 3 : Vos Frais Professionnels</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Comment allez-vous au travail ?</label>
+                    <div class="grid-2">
+                        <button onclick="pickTransport(true)" class="btn-select" id="opt-car">Voiture / Moto perso</button>
+                        <button onclick="pickTransport(false)" class="btn-select active" id="opt-navigo">Transports / Télétravail</button>
+                    </div>
+                </div>
+                <div id="car-fields" class="hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                    <div class="grid-3" style="margin-top: 0; margin-bottom: 1rem;">
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Puissance (CV)</span>
+                            <input type="number" id="input-car-cv" value="5">
+                        </div>
