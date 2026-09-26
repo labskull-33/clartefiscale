@@ -296,7 +296,7 @@
                 <p>Mentions légales de l'ensemble du site : <a href="/mentions-legales/">davidvuillet.fr/mentions-legales</a>.</p>
             </details>
 
-            <p class="small">ClartéFiscale · Gratuit et sans inscription · Estimations sur les revenus 2025 · Mis à jour le 26 septembre 2026</p>
+            <p class="small">ClartéFiscale · Gratuit et sans inscription · Barème 2026 (revenus 2025) · Mis à jour le 26 septembre 2026</p>
         </div>
     </footer>
 
@@ -316,10 +316,10 @@
     </style>
 
     <script>
-    /* ===== Paramètres (revenus 2025, estimations à vérifier) ===== */
+    /* ===== Paramètres : barème 2026 (revenus 2025), loi de finances pour 2026 ===== */
     const P = {
         tranches: [[11600,0],[29579,.11],[84577,.30],[181917,.41],[Infinity,.45]],
-        abt10: { min: 504, max: 14426 }, qfDemi: 1807, qfT: 4262,
+        abt10: { min: 509, max: 14555 }, qfDemi: 1807, qfT: 4262, recouvrement: 61,
         decote: { seul: 897, couple: 1483, taux: .4525 },
         repas: 5.45, tele: 2.70, kmMax: 40, smic: 21622, hsupMax: 7500,
         garde: 3500, colucheMax: 1000,
@@ -437,8 +437,10 @@
         const redDons = d75b * .75 + Math.min(d66 + d75 - d75b, Rfin * .2) * .66;
         const impBase = impot(Rfin);
         const reductions = Math.min(impBase, scol + redDons);
-        const final = impBase - reductions + (opt2 ? 0 : pfu) - credGarde;
-        const naive = impot(Math.max(0, sal1Prerempli - abt10(sal1Prerempli) + sal2 - dix2), false) + pfu;
+        let final = impBase - reductions + (opt2 ? 0 : pfu) - credGarde;
+        if (final > 0 && final < P.recouvrement) final = 0; // impôt inférieur à 61 € : non recouvré
+        let naive = impot(Math.max(0, sal1Prerempli - abt10(sal1Prerempli) + sal2 - dix2), false) + pfu;
+        if (naive < P.recouvrement) naive = 0;
         const gain = Math.max(0, naive - final);
         const gReels = impot(Rdix) - impot(R);
         const gT = t ? impot(Rfin, false) - impot(Rfin) : 0;
@@ -490,7 +492,7 @@
             + '<h3>💡 3. Les "Astuces de Terrain" (Arbitrage Chiffré)</h3>' + tips
             + '<h3>✍️ 4. Votre "Parachute" (Droit à l\'erreur)</h3><p style="font-size:.9rem;color:#64748b;margin-bottom:.75rem">À copier dans la zone « Mentions expresses » de votre déclaration :</p><div class="quote" id="mention">« ' + m.join(' ') + ' »</div>'
             + '<div class="item" style="margin-top:1.5rem">🔒 <strong>Note de sécurité :</strong> ce rapport a été généré dans un environnement sécurisé. Vos données de profil n\'ont pas été partagées. Pour votre sécurité, ne transmettez jamais votre numéro fiscal ou vos mots de passe sur un outil d\'intelligence artificielle.</div>'
-            + '<p class="note">Estimation sur la base du barème applicable aux revenus 2025, à vérifier sur le simulateur officiel avant de valider.</p></div>';
+            + '<p class="note">Estimation sur la base du barème 2026 (revenus 2025), à vérifier sur le simulateur officiel avant de valider.</p></div>';
     }
     function copyReport() {
         const text = $('report-content').innerText;
