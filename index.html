@@ -26,7 +26,8 @@
         .btn-select { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; background: white; cursor: pointer; font-weight: 500; font-size: 0.875rem; width: 100%; text-align: center; }
         .btn-select.active { border-color: #4338ca; background: #e0e7ff; color: #4338ca; }
         label { display: block; font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; text-align: left; }
-        input[type="number"] { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; outline: none; display: block; background: #ffffff; }
+        .mini { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 0.25rem; text-align: left; }
+        select, input[type="number"] { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; outline: none; display: block; background: #ffffff; }
         .checkbox-container { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-top: 0.5rem; cursor: pointer; width: 100%; text-align: left; }
         .hidden { display: none !important; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid #4338ca; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1.5rem auto; }
@@ -119,6 +120,25 @@
                         <div class="grid-3" id="alt-inputs" style="margin-top: 0.5rem;"></div>
                     </div>
                 </div>
+                <div style="margin-bottom: 2rem;">
+                    <label>Situations particulières (facultatif) :</label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-inv1">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Vous avez une carte d'invalidité (au moins 80 %) ou une pension d'invalidité (au moins 40 %)</span>
+                    </label>
+                    <label class="checkbox-container spouse-only hidden">
+                        <input type="checkbox" id="check-inv2">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Votre conjoint a une carte d'invalidité (au moins 80 %) ou une pension d'invalidité (au moins 40 %)</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-vet">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Vous (ou votre conjoint) avez plus de 74 ans et la carte du combattant</span>
+                    </label>
+                    <label class="checkbox-container solo-only">
+                        <input type="checkbox" id="check-L">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Vous vivez seul(e) et avez élevé seul(e) un enfant pendant au moins 5 ans (il n'est plus à votre charge)</span>
+                    </label>
+                </div>
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
                     <button onclick="changeScreen('family', 'welcome')" class="btn-outline">Retour</button>
                     <button onclick="changeScreen('family', 'income')" class="btn-violet">Continuer ➔</button>
@@ -128,14 +148,40 @@
             <!-- ÉTAPE 2 -->
             <div id="step-income" class="hidden">
                 <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
-                <h2>Étape 2 : Vos Revenus Principaux</h2>
+                <h2>Étape 2 : Vos Revenus 2025</h2>
                 <div style="margin-bottom: 1.5rem;">
-                    <label>Votre Revenu Net Imposable Annuel (€)</label>
-                    <input type="number" id="input-income" placeholder="Ex: 28500" value="0">
+                    <label>Vos revenus annuels (€, montants nets imposables)</label>
+                    <div class="grid-3" style="margin-top: 0;">
+                        <div>
+                            <span class="mini">Salaires</span>
+                            <input type="number" id="input-income" placeholder="Ex: 28500" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Allocations chômage</span>
+                            <input type="number" id="input-chom" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Retraites, pensions (invalidité, pension alimentaire reçue)</span>
+                            <input type="number" id="input-pension" min="0" value="0">
+                        </div>
+                    </div>
                 </div>
-                <div id="spouse-fields" class="hidden" style="margin-bottom: 1.5rem;">
-                    <label>Revenu Net Imposable Annuel de votre conjoint (€)</label>
-                    <input type="number" id="input-income-2" placeholder="Ex: 24000" value="0">
+                <div id="spouse-fields" class="spouse-only hidden" style="margin-bottom: 1.5rem;">
+                    <label>Revenus annuels de votre conjoint (€)</label>
+                    <div class="grid-3" style="margin-top: 0;">
+                        <div>
+                            <span class="mini">Salaires</span>
+                            <input type="number" id="input-income-2" placeholder="Ex: 24000" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Allocations chômage</span>
+                            <input type="number" id="input-chom-2" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Retraites, pensions</span>
+                            <input type="number" id="input-pension-2" min="0" value="0">
+                        </div>
+                    </div>
                 </div>
                 <div style="margin-bottom: 2rem;">
                     <label>Situations particulières cette année :</label>
@@ -155,6 +201,18 @@
                         <input type="checkbox" id="check-apprentice">
                         <span style="font-size: 0.875rem; font-weight: 500;">Je suis Apprenti(e) ou Stagiaire</span>
                     </label>
+                    <label class="checkbox-container spouse-only hidden">
+                        <input type="checkbox" id="check-hours-2">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Mon conjoint a effectué des Heures Supplémentaires</span>
+                    </label>
+                    <div id="hours-fields-2" class="hidden" style="margin-top: 0.5rem;">
+                        <span class="mini">Montant des heures sup exonérées du conjoint (fiche de paie de décembre)</span>
+                        <input type="number" id="input-hours-2" min="0" value="0">
+                        <label class="checkbox-container" style="margin-top: 0.5rem;">
+                            <input type="checkbox" id="check-hours-included-2">
+                            <span style="font-size: 0.875rem; font-weight: 500;">Ce montant est inclus dans son salaire ci-dessus</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
                     <button onclick="changeScreen('income', 'family')" class="btn-outline">Retour</button>
@@ -222,6 +280,52 @@
                         <span style="font-size: 0.875rem; font-weight: 500;">Je déjeune hors de chez moi les jours sur place (5,45 € / jour)</span>
                     </label>
                 </div>
+                <div id="spouse-work" class="spouse-only hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                    <label>Frais professionnels de votre conjoint</label>
+                    <div class="grid-3" style="margin-top: 0;">
+                        <div>
+                            <span class="mini">Trajet domicile-travail</span>
+                            <select id="veh-2">
+                                <option value="none">Transports / aucun</option>
+                                <option value="car">Voiture</option>
+                                <option value="moto">Moto (plus de 50 cm³)</option>
+                                <option value="cyclo">Scooter (50 cm³ ou moins)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="mini">Puissance (CV)</span>
+                            <input type="number" id="input-cv-2" value="5">
+                        </div>
+                        <div>
+                            <span class="mini">Distance aller (km)</span>
+                            <input type="number" id="input-km-2" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Péages / parking (€/an)</span>
+                            <input type="number" id="input-tolls-2" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Jours sur place</span>
+                            <input type="number" id="input-office-2" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Jours de télétravail</span>
+                            <input type="number" id="input-tele-2" min="0" value="0">
+                        </div>
+                    </div>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-lunch-2">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Il ou elle déjeune hors de chez soi les jours sur place</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-electric-2">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Véhicule 100 % électrique (+20 %)</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-justified-2">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Plus de 40 km avec une raison valable</span>
+                    </label>
+                </div>
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
                     <button onclick="changeScreen('work', 'income')" class="btn-outline">Retour</button>
                     <button onclick="changeScreen('work', 'savings')" class="btn-violet">Continuer ➔</button>
@@ -231,7 +335,7 @@
             <!-- ÉTAPE 4 -->
             <div id="step-savings" class="hidden">
                 <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
-                <h2>Étape 4 : Épargne, Garde &amp; Dons</h2>
+                <h2>Étape 4 : Épargne, Famille &amp; Dépenses</h2>
                 <div id="childcare-fields" class="hidden" style="margin-bottom: 1.5rem;">
                     <label>Reste à charge pour la garde des enfants de moins de 6 ans (€, aides CAF / CMG déduites, hors repas)</label>
                     <div class="grid-3" id="childcare-inputs" style="margin-top: 0;"></div>
@@ -257,6 +361,63 @@
                         <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Autres dons à des associations</span>
                         <input type="number" id="input-don-66" min="0" value="0">
                     </div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Dépenses qui réduisent l'impôt (facultatif, montants 2025) :</label>
+                    <div class="grid-2" style="margin-top: 0;">
+                        <div>
+                            <span class="mini">Emploi à domicile : ménage, jardinage, soutien scolaire… (aides déduites)</span>
+                            <input type="number" id="input-domicile" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Personnes du foyer âgées de plus de 65 ans</span>
+                            <input type="number" id="input-over65" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Versements sur un PER (plan d'épargne retraite), vous</span>
+                            <input type="number" id="input-per" min="0" value="0">
+                        </div>
+                        <div class="spouse-only hidden">
+                            <span class="mini">Versements sur un PER, conjoint</span>
+                            <input type="number" id="input-per-2" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">« Plafond épargne retraite » de votre avis d'impôt 2025 (si vous le connaissez)</span>
+                            <input type="number" id="input-per-plafond" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Pension versée à des enfants majeurs (total de l'année)</span>
+                            <input type="number" id="input-pa-maj" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Nombre d'enfants majeurs aidés</span>
+                            <input type="number" id="input-pa-maj-n" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Enfants majeurs logés et nourris chez vous, non comptés à charge</span>
+                            <input type="number" id="input-pa-heb" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Autres pensions alimentaires versées (ex-conjoint, enfant vivant chez l'autre parent, parent âgé)</span>
+                            <input type="number" id="input-pa-autre" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Frais d'EHPAD de vous ou votre conjoint (hébergement et dépendance, aides déduites)</span>
+                            <input type="number" id="input-ehpad" min="0" value="0">
+                        </div>
+                        <div>
+                            <span class="mini">Cotisations syndicales, vous</span>
+                            <input type="number" id="input-synd" min="0" value="0">
+                        </div>
+                        <div class="spouse-only hidden">
+                            <span class="mini">Cotisations syndicales, conjoint</span>
+                            <input type="number" id="input-synd-2" min="0" value="0">
+                        </div>
+                    </div>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-domicile-first">
+                        <span style="font-size: 0.875rem; font-weight: 500;">2025 est la première année où j'emploie quelqu'un à domicile</span>
+                    </label>
                 </div>
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
                     <button onclick="changeScreen('savings', 'work')" class="btn-outline">Retour</button>
@@ -343,13 +504,17 @@
         // Barème kilométrique 2026 (revenus 2025), inchangé depuis les revenus 2022 : [a, b, c, d]
         km: { 3:[.529,.316,1065,.370], 4:[.606,.340,1330,.407], 5:[.636,.357,1395,.427], 6:[.665,.374,1457,.447], 7:[.697,.394,1515,.470] },
         moto: { 2:[.395,.099,891,.248], 5:[.468,.082,1158,.275], 6:[.606,.079,1583,.343] },
-        cyclo: [.315,.079,711,.198]
+        cyclo: [.315,.079,711,.198],
+        pensionAbt: { min: 454, max: 4439 }, csg: .068, qfL: 1079,
+        paMajeur: 6855, paHeberge: 4075, perMin: 4637, perMax: 37094, ehpad: 10000,
+        domicile: { base: 12000, first: 15000, maj: 1500, max: 15000, maxFirst: 18000 }
     };
     const state = { status: 'solo', car: false, vehicle: 'car' };
     const $ = id => document.getElementById(id);
     const num = id => { const el = $(id); const n = el ? parseFloat(String(el.value).replace(',', '.')) : 0; return isFinite(n) && n > 0 ? n : 0; };
     const eur = n => Math.round(n).toLocaleString('fr-FR') + ' €';
     const cs = c => '<span class="case">Case ' + c + '</span>';
+    const chk = id => $(id).checked;
 
     /* ===== Navigation ===== */
     function changeScreen(from, to) {
@@ -361,7 +526,8 @@
     function pickStatus(s) {
         state.status = s;
         ['solo', 'couple', 'alone-kids'].forEach(k => $('opt-' + k).classList.toggle('active', k === s));
-        $('spouse-fields').classList.toggle('hidden', s !== 'couple');
+        document.querySelectorAll('.spouse-only').forEach(el => el.classList.toggle('hidden', s !== 'couple'));
+        document.querySelectorAll('.solo-only').forEach(el => el.classList.toggle('hidden', s !== 'solo'));
     }
     function pickTransport(car) {
         state.car = car;
@@ -375,6 +541,7 @@
         $('cv-field').classList.toggle('hidden', v === 'cyclo');
     }
     $('check-hours').addEventListener('change', e => $('hours-fields').classList.toggle('hidden', !e.target.checked));
+    $('check-hours-2').addEventListener('change', e => $('hours-fields-2').classList.toggle('hidden', !e.target.checked));
     function buildChildcare() {
         const n = Math.min(3, num('input-kids-under6'));
         $('childcare-fields').classList.toggle('hidden', n === 0);
@@ -409,7 +576,9 @@
     }
     $('check-alternee').addEventListener('change', buildAlt);
     KIDS.forEach(([id]) => $(id).addEventListener('input', () => { if ($('check-alternee').checked) buildAlt(); }));
-    function parts(withT) {
+    // opts.t = false : sans la case T · opts.sp = false : sans les demi-parts P, F, W, S, L
+    function parts(opts = {}) {
+        const withT = opts.t !== false, withSp = opts.sp !== false;
         const n = nbKids(); const couple = state.status === 'couple';
         const a = KIDS.reduce((s, [id]) => s + nbAlt(id), 0), e = n - a;
         // Enfants à charge exclusive décomptés en premier : 1/2 part pour les deux premiers, 1 part ensuite.
@@ -419,15 +588,24 @@
         let p = (couple ? 2 : 1) + kidParts;
         const t = withT && state.status === 'alone-kids' && n > 0;
         const tBonus = t ? (e > 0 ? .5 : .25) : 0;
-        p += tBonus;
-        return { p, base: couple ? 2 : 1, t, tBonus, excl: e, alt: a, couple };
+        // Demi-parts spéciales : invalidité (P, F), ancien combattant (W, S), case L.
+        // Pour une personne seule, elles ne se cumulent pas entre elles.
+        let sp = 0, L = false;
+        if (withSp) {
+            if (couple) sp = (chk('check-inv1') ? 1 : 0) + (chk('check-inv2') ? 1 : 0) + (chk('check-vet') ? 1 : 0);
+            else if (chk('check-inv1') || chk('check-vet')) sp = 1;
+            else L = state.status === 'solo' && n === 0 && chk('check-L');
+        }
+        p += tBonus + sp * .5 + (L ? .5 : 0);
+        return { p, base: couple ? 2 : 1, t, tBonus, sp, L, excl: e, alt: a, couple };
     }
-    function impot(R, withT = true) {
-        const { p, base, t, excl, couple } = parts(withT);
+    function impot(R, opts) {
+        const { p, base, t, sp, L, excl, couple } = parts(opts);
         const full = p * bareme(R / p), ref = base * bareme(R / base);
-        const demi = (p - base) * 2; // nombre de demi-parts supplémentaires (0,5 par quart de part)
+        const demi = (p - base - sp * .5 - (L ? .5 : 0)) * 2; // demi-parts liées aux enfants (0,5 par quart de part)
         // Case T : la part du premier enfant (demi-part enfant + demi-part T) est plafonnée à 4 262 €, moitié s'il n'y a que des enfants en garde alternée
-        const plafond = t ? (excl > 0 ? P.qfT + (demi - 2) * P.qfDemi : P.qfT / 2 + (demi - 1) * P.qfDemi) : demi * P.qfDemi;
+        const plafond = (t ? (excl > 0 ? P.qfT + (demi - 2) * P.qfDemi : P.qfT / 2 + (demi - 1) * P.qfDemi) : demi * P.qfDemi)
+            + sp * P.qfDemi + (L ? P.qfL : 0);
         let imp = Math.max(full, ref - plafond);
         const seuil = couple ? P.decote.couple : P.decote.seul;
         const dec = seuil - P.decote.taux * imp;
@@ -435,11 +613,33 @@
         return imp;
     }
     const abt10 = s => s <= 0 ? 0 : Math.min(s, Math.min(P.abt10.max, Math.max(P.abt10.min, s * .1)));
-    function kmCost(cv, km) {
+    function kmCost(cv, km, vehicle) {
         cv = Math.round(cv);
-        if (state.vehicle === 'car') { const [a, b, c, d] = P.km[Math.min(7, Math.max(3, cv || 5))]; return km <= 5000 ? km * a : km <= 20000 ? km * b + c : km * d; }
-        const [a, b, c, d] = state.vehicle === 'cyclo' ? P.cyclo : P.moto[!cv || cv > 5 ? 6 : cv <= 2 ? 2 : 5];
+        if (vehicle === 'car') { const [a, b, c, d] = P.km[Math.min(7, Math.max(3, cv || 5))]; return km <= 5000 ? km * a : km <= 20000 ? km * b + c : km * d; }
+        const [a, b, c, d] = vehicle === 'cyclo' ? P.cyclo : P.moto[!cv || cv > 5 ? 6 : cv <= 2 ? 2 : 5];
         return km <= 3000 ? km * a : km <= 6000 ? km * b + c : km * d;
+    }
+    // Frais réels du déclarant 1 ou du conjoint (2)
+    function fees(i) {
+        const two = i === 2, id = (a, b) => two ? b : a;
+        const veh = two ? $('veh-2').value : (state.car ? state.vehicle : 'none');
+        let dOff, dTele;
+        if (two) { dOff = num('input-office-2'); dTele = num('input-tele-2'); }
+        else {
+            const dTot = num('input-days-total');
+            dOff = dTot ? Math.min(num('input-days-office'), dTot) : num('input-days-office');
+            dTele = chk('check-telework') ? Math.max(0, dTot - dOff) : 0;
+        }
+        const dist = veh !== 'none' ? num(id('input-car-km', 'input-km-2')) : 0;
+        const kmRet = dist > P.kmMax && !chk(id('check-car-justified', 'check-justified-2')) ? P.kmMax : dist;
+        const kmAn = kmRet * 2 * dOff;
+        let fKm = dist ? kmCost(num(id('input-car-cv', 'input-cv-2')), kmAn, veh) : 0;
+        if (chk(id('check-car-electric', 'check-electric-2'))) fKm *= 1.2;
+        const fToll = veh !== 'none' ? num(id('input-car-tolls', 'input-tolls-2')) : 0;
+        const fRepas = chk(id('check-lunch', 'check-lunch-2')) ? dOff * P.repas : 0;
+        const fTele = Math.min(dTele * P.tele, P.teleMax);
+        const fSyn = num(id('input-synd', 'input-synd-2')); // aux frais réels, les cotisations syndicales y sont incluses
+        return { dist, kmRet, kmAn, dOff, dTele, fKm, fToll, fRepas, fTele, fSyn, reels: fKm + fToll + fRepas + fTele + fSyn };
     }
 
     /* ===== Rapport ===== */
@@ -449,43 +649,55 @@
     }
     function buildReport() {
         const couple = state.status === 'couple';
-        // Salaire déclarant 1
+        // Salaires : correction des heures sup incluses et de la part exonérée des apprentis
         let sal1 = num('input-income');
-        const hs = $('check-hours').checked ? num('input-hours') : 0;
-        const hsIncluded = hs > 0 && $('check-hours-included').checked;
         const sal1Prerempli = sal1;
+        const hs = chk('check-hours') ? num('input-hours') : 0;
+        const hsIncluded = hs > 0 && chk('check-hours-included');
         if (hsIncluded) sal1 = Math.max(0, sal1 - Math.min(hs, P.hsupMax));
-        const apprenti = $('check-apprentice').checked;
+        const apprenti = chk('check-apprentice');
         if (apprenti) sal1 = Math.max(0, sal1 - P.smic);
-        const sal2 = couple ? num('input-income-2') : 0;
-        // Frais réels déclarant 1
-        const dTot = num('input-days-total');
-        const dOff = dTot ? Math.min(num('input-days-office'), dTot) : num('input-days-office');
-        const dTele = $('check-telework').checked ? Math.max(0, dTot - dOff) : 0;
-        const dist = state.car ? num('input-car-km') : 0;
-        const kmRet = dist > P.kmMax && !$('check-car-justified').checked ? P.kmMax : dist;
-        const kmAn = kmRet * 2 * dOff;
-        let fKm = dist ? kmCost(num('input-car-cv'), kmAn) : 0;
-        if ($('check-car-electric').checked) fKm *= 1.2;
-        const fToll = state.car ? num('input-car-tolls') : 0;
-        const fRepas = $('check-lunch').checked ? dOff * P.repas : 0;
-        const fTele = Math.min(dTele * P.tele, P.teleMax);
-        const reels = fKm + fToll + fRepas + fTele;
-        const dix1 = abt10(sal1), dix2 = abt10(sal2);
-        const useReels = reels > dix1;
-        const net1 = sal1 - (useReels ? Math.min(reels, sal1) : dix1);
-        const R = Math.max(0, net1 + sal2 - dix2);
-        const Rdix = Math.max(0, sal1 - dix1 + sal2 - dix2);
+        let sal2 = couple ? num('input-income-2') : 0;
+        const sal2Prerempli = sal2;
+        const hs2 = couple && chk('check-hours-2') ? num('input-hours-2') : 0;
+        const hsIncluded2 = hs2 > 0 && chk('check-hours-included-2');
+        if (hsIncluded2) sal2 = Math.max(0, sal2 - Math.min(hs2, P.hsupMax));
+        const chom1 = num('input-chom'), chom2 = couple ? num('input-chom-2') : 0;
+        const pen1 = num('input-pension'), pen2 = couple ? num('input-pension-2') : 0;
+        // Salaires et chômage : 10 % automatiques ou frais réels, pour chaque déclarant
+        const F1 = fees(1), F2 = couple ? fees(2) : { reels: 0, fSyn: 0 };
+        const ts1 = sal1 + chom1, ts2 = sal2 + chom2;
+        const dix1 = abt10(ts1), dix2 = abt10(ts2);
+        const useReels = F1.reels > dix1, useReels2 = couple && F2.reels > dix2;
+        const ded1 = useReels ? Math.min(F1.reels, ts1) : dix1, ded2 = useReels2 ? Math.min(F2.reels, ts2) : dix2;
+        // Pensions : 10 % par pensionné (454 € minimum), 4 439 € maximum pour le foyer
+        const abtPen = pens => Math.min(P.pensionAbt.max, pens.reduce((s, x) => s + (x > 0 ? Math.min(x, Math.max(P.pensionAbt.min, x * .1)) : 0), 0));
+        const netPen = pen1 + pen2 - abtPen([pen1, pen2]);
+        // Charges déductibles : pensions alimentaires et PER
+        const paMajVerse = num('input-pa-maj'), nMaj = num('input-pa-maj-n') || (paMajVerse > 0 ? 1 : 0);
+        const paMaj = Math.min(paMajVerse, P.paMajeur * nMaj);
+        const nHeb = num('input-pa-heb'), paHeb = nHeb * P.paHeberge;
+        const paAutre = num('input-pa-autre');
+        const pa = paMaj + paHeb + paAutre;
+        const per1 = num('input-per'), per2 = couple ? num('input-per-2') : 0, perVerse = per1 + per2;
+        const perPlafAvis = num('input-per-plafond');
+        // Plafond PER estimé : 10 % des revenus d'activité, entre 4 637 € et 37 094 € par déclarant
+        const perEst = x => Math.min(P.perMax, Math.max(P.perMin, x * .1));
+        const perPlaf = perPlafAvis || perEst(ts1 - ded1) + (couple ? perEst(ts2 - ded2) : 0);
+        const per = Math.min(perVerse, perPlaf);
+        const avantCharges = ts1 - ded1 + ts2 - ded2 + netPen;
+        const R = Math.max(0, avantCharges - pa - per);
+        const extra1 = useReels ? ded1 - dix1 : 0, extra2 = useReels2 ? ded2 - dix2 : 0;
         // Placements
         const int = num('input-interest'), div = num('input-dividends'), fin = int + div;
-        const { p, t, tBonus } = parts(true);
+        const { p, t, tBonus, sp, L, excl, alt: nAlt } = parts();
         const tmi = tmiOf(R / p);
         const pfu = fin * .128, bar = (int + div * .6) * tmi;
-        const opt2 = fin > 0 && bar < pfu;
+        const csgGain = fin * P.csg * tmi; // CSG déductible l'année suivante en cas d'option 2OP
+        const opt2 = fin > 0 && bar - csgGain < pfu;
         const Rfin = opt2 ? R + int + div * .6 : R;
-        // Réductions & crédits
-        const kids6 = Math.min(3, num('input-kids-under6'));
         // Frais de garde : les derniers enfants de moins de 6 ans saisis sont ceux en garde alternée
+        const kids6 = Math.min(3, num('input-kids-under6'));
         const alt6 = Math.min(kids6, nbAlt('input-kids-under6'));
         const garde = []; let nE = 0, nA = 0;
         for (let k = 1; k <= kids6; k++) {
@@ -494,68 +706,106 @@
             garde.push({ k, r, alt, plaf, base: Math.min(r, plaf), c });
         }
         const credGarde = garde.reduce((a, g) => a + g.base * .5, 0);
-        // Scolarité : [nombre, case, montant par enfant]
+        // Scolarité : [nombre, case, montant par enfant, garde alternée]
         const scolRows = [];
         [['input-kids-college', '7EA', '7EB', 61], ['input-kids-lycee', '7EC', '7ED', 153], ['input-kids-sup', '7EF', '7EG', 183]].forEach(([id, cE, cA, m]) => {
             const a = nbAlt(id), e = num(id) - a;
             if (e > 0) scolRows.push([e, cE, m, false]);
             if (a > 0) scolRows.push([a, cA, m / 2, true]);
         });
-        const scol = scolRows.reduce((s, x) => s + x[0] * x[2], 0);        // Dons « Coluche » : 1 000 € jusqu'au 13/10/2025 (7UD), plafond global porté à 2 000 € pour les dons suivants (7UQ)
+        const scol = scolRows.reduce((s, x) => s + x[0] * x[2], 0);
+        // Dons « Coluche » : 1 000 € jusqu'au 13/10/2025 (7UD), plafond global porté à 2 000 € pour les dons suivants (7UQ)
         const dUD = num('input-don-75'), dUQ = num('input-don-75b'), d66 = num('input-don-66');
         const d75 = dUD + dUQ;
         const rUD = Math.min(dUD, P.colucheMax);
         const d75b = rUD + Math.min(dUQ, P.colucheMax2 - rUD);
         const redDons = d75b * .75 + Math.min(d66 + d75 - d75b, Rfin * .2) * .66;
+        // Emploi à domicile : 12 000 € + 1 500 € par enfant à charge (750 € en garde alternée) ou personne de plus de 65 ans
+        const dom = num('input-domicile'), domFirst = chk('check-domicile-first');
+        const majDom = P.domicile.maj * (excl + nAlt * .5 + num('input-over65'));
+        const plafDom = Math.min(domFirst ? P.domicile.maxFirst : P.domicile.max, (domFirst ? P.domicile.first : P.domicile.base) + majDom);
+        const credDom = Math.min(dom, plafDom) * .5;
+        // Cotisations syndicales : crédit de 66 % dans la limite de 1 % des salaires et pensions, sauf aux frais réels
+        const syn1 = useReels ? 0 : F1.fSyn, syn2 = useReels2 ? 0 : F2.fSyn;
+        const credSyn = .66 * (Math.min(syn1, .01 * (ts1 + pen1)) + Math.min(syn2, .01 * (ts2 + pen2)));
+        // EHPAD : réduction de 25 % dans la limite de 10 000 €
+        const ehpad = num('input-ehpad'), redEhpad = .25 * Math.min(ehpad, P.ehpad);
+
         const impBase = impot(Rfin);
-        const reductions = Math.min(impBase, scol + redDons);
-        let final = impBase - reductions + (opt2 ? 0 : pfu) - credGarde;
+        const reductions = Math.min(impBase, scol + redDons + redEhpad);
+        let final = impBase - reductions + (opt2 ? 0 : pfu) - credGarde - credDom - credSyn;
         if (final > 0 && final < P.recouvrement) final = 0; // impôt inférieur à 61 € : non recouvré
-        let naive = impot(Math.max(0, sal1Prerempli - abt10(sal1Prerempli) + sal2 - dix2), false) + pfu;
+        const netPre = s => s - abt10(s);
+        let naive = impot(Math.max(0, netPre(sal1Prerempli + chom1) + netPre(sal2Prerempli + chom2) + netPen), { t: false, sp: false }) + pfu;
         if (naive < P.recouvrement) naive = 0;
         const gain = Math.max(0, naive - final);
-        const gReels = impot(Rdix) - impot(R);
-        const gT = t ? impot(Rfin, false) - impot(Rfin) : 0;
+        const gReels = impot(R + extra1) - impot(R), gReels2 = impot(R + extra2) - impot(R);
+        const gPa = impot(R + pa) - impot(R), gPer = impot(R + per) - impot(R);
+        const gT = t ? impot(Rfin, { t: false }) - impot(Rfin) : 0;
+        const gSp = sp || L ? impot(Rfin, { sp: false }) - impot(Rfin) : 0;
 
         // 1. Actions
         const A = [];
         const add = (a, c, why) => A.push('<div class="item"><div class="k">Action ' + (A.length + 1) + '</div><div>' + a + '</div><div style="margin-top:.35rem"><span class="k">Case à cocher · </span>' + c + '</div><div style="margin-top:.35rem"><span class="k">Pourquoi c\'est important · </span>' + why + '</div></div>');
         if (hsIncluded) add('Corrigez votre salaire : il inclut vos heures supplémentaires exonérées.', cs('1AJ') + ' : <strong>' + eur(sal1 + (apprenti ? P.smic : 0)) + '</strong> au lieu de ' + eur(sal1Prerempli) + ' · ' + cs('1GH') + ' : <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong>', 'Les heures sup sont exonérées jusqu\'à <strong>7 500 €</strong>. Laissées dans le salaire, elles vous coûtent <span class="gain">≈ ' + eur(Math.min(hs, P.hsupMax) * tmi) + '</span>.');
         else if (hs > 0) add('Vérifiez le montant prérempli de vos heures supplémentaires.', cs('1GH') + ' : <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong>', 'Elles doivent apparaître en 1GH et non dans le salaire imposable ' + cs('1AJ') + '.');
+        if (hsIncluded2) add('Corrigez le salaire de votre conjoint : il inclut ses heures supplémentaires exonérées.', cs('1BJ') + ' : <strong>' + eur(sal2) + '</strong> au lieu de ' + eur(sal2Prerempli) + ' · ' + cs('1HH') + ' : <strong>' + eur(Math.min(hs2, P.hsupMax)) + '</strong>', 'Exonérées jusqu\'à <strong>7 500 €</strong> par personne : <span class="gain">≈ ' + eur(Math.min(hs2, P.hsupMax) * tmi) + '</span> d\'impôt en moins.');
+        else if (hs2 > 0) add('Vérifiez le montant prérempli des heures supplémentaires de votre conjoint.', cs('1HH') + ' : <strong>' + eur(Math.min(hs2, P.hsupMax)) + '</strong>', 'Elles doivent apparaître en 1HH et non dans son salaire imposable ' + cs('1BJ') + '.');
         if (apprenti) add('Ne déclarez que la part de votre rémunération qui dépasse le SMIC annuel.', cs('1AJ') + ' : <strong>' + eur(sal1) + '</strong>', 'Salaire d\'apprenti et gratification de stage sont exonérés jusqu\'à <strong>' + eur(P.smic) + '</strong>.');
-        if (useReels) add('Optez pour les frais réels.', cs('1AK') + ' : <strong>' + eur(reels) + '</strong>', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) dépassent les 10 % automatiques (<strong>' + eur(dix1) + '</strong>) : <span class="gain">≈ ' + eur(gReels) + ' d\'impôt en moins</span>.');
-        else add('Gardez la déduction automatique de 10 %.', cs('1AK') + ' vide', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) sont inférieurs aux 10 % (<strong>' + eur(dix1) + '</strong>).');
+        if (useReels) add('Optez pour les frais réels.', cs('1AK') + ' : <strong>' + eur(F1.reels) + '</strong>', 'Vos frais réels (<strong>' + eur(F1.reels) + '</strong>) dépassent les 10 % automatiques (<strong>' + eur(dix1) + '</strong>) : <span class="gain">≈ ' + eur(gReels) + ' d\'impôt en moins</span>.');
+        else if (ts1 > 0) add('Gardez la déduction automatique de 10 %.', cs('1AK') + ' vide', 'Vos frais réels (<strong>' + eur(F1.reels) + '</strong>) sont inférieurs aux 10 % (<strong>' + eur(dix1) + '</strong>).');
+        if (useReels2) add('Optez pour les frais réels de votre conjoint.', cs('1BK') + ' : <strong>' + eur(F2.reels) + '</strong>', 'Ses frais réels (<strong>' + eur(F2.reels) + '</strong>) dépassent ses 10 % automatiques (<strong>' + eur(dix2) + '</strong>) : <span class="gain">≈ ' + eur(gReels2) + ' d\'impôt en moins</span>. Chaque déclarant choisit séparément.');
+        else if (couple && F2.reels > 0) add('Gardez la déduction de 10 % pour votre conjoint.', cs('1BK') + ' vide', 'Ses frais réels (<strong>' + eur(F2.reels) + '</strong>) sont inférieurs à ses 10 % (<strong>' + eur(dix2) + '</strong>).');
         if (t) add('Section 1 « Situation du foyer » : cochez « Vous vivez seul(e) avec vos enfants ».', cs('T'), (tBonus < .5 ? 'Un <strong>quart de part' : 'Une <strong>demi-part') + ' en plus</strong> (' + String(p).replace('.', ',') + ' parts au lieu de ' + String(p - tBonus).replace('.', ',') + ')' + (gT > 0 ? ' : <span class="gain">≈ ' + eur(gT) + ' d\'impôt en moins</span>' : '') + '. Elle n\'est jamais cochée d\'office.');
+        if (sp || L) {
+            const cases = couple ? [chk('check-inv1') && 'P', chk('check-inv2') && 'F', chk('check-vet') && 'S'].filter(Boolean) : [L ? 'L' : chk('check-inv1') ? 'P' : 'W'];
+            add('Section 1 « Situation du foyer » : cochez ' + (cases.length > 1 ? 'les cases correspondant à votre situation' : 'la case correspondant à votre situation') + '.', cases.map(cs).join(' · '), 'Une <strong>demi-part en plus</strong> par case' + (L ? ' (avantage limité à 1 079 €)' : ' (avantage limité à 1 807 € chacune)') + (gSp > 0 ? ' : <span class="gain">≈ ' + eur(gSp) + ' d\'impôt en moins</span>' : '') + '. Gardez le justificatif (carte d\'invalidité, carte du combattant, preuve d\'avoir élevé seul(e) votre enfant).' + (!couple && (chk('check-inv1') || chk('check-vet') || chk('check-L')) ? ' Pour une personne seule, ces demi-parts ne se cumulent pas entre elles.' : ''));
+        }
         garde.forEach(g => add('Déclarez les frais de garde de l\'enfant ' + g.k + (g.alt ? ' (garde alternée)' : '') + ' (aides CAF / CMG déduites, hors repas' + (g.alt ? ', seulement la part que vous payez' : '') + ').', cs(g.c) + ' : <strong>' + eur(g.base) + '</strong>', g.r > g.plaf ? 'Vos dépenses réelles sont de <strong>' + eur(g.r) + '</strong>, mais l\'administration plafonne la base de calcul à <strong>' + eur(g.plaf) + '</strong> par enfant' + (g.alt ? ' en garde alternée (moitié de 3 500 €)' : '') + '. Votre gain réel (crédit d\'impôt de 50 %) sera donc de <span class="gain">' + eur(g.plaf / 2) + '</span>.' : 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(g.base * .5) + '</span>, versé même sans impôt à payer (plafond ' + eur(g.plaf) + ' par enfant' + (g.alt ? ' en garde alternée' : '') + ', soit ' + eur(g.plaf / 2) + ' maximum).'));
+        if (dom > 0) add('Déclarez vos dépenses d\'emploi à domicile (montant payé, aides déduites).', cs('7DB') + ' : <strong>' + eur(dom) + '</strong>' + (domFirst ? ' · ' + cs('7DQ') + ' cochée (première année)' : ''), 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(credDom) + '</span>, versé même sans impôt à payer (plafond de dépenses : <strong>' + eur(plafDom) + '</strong>). Si vous avez utilisé l\'avance immédiate de l\'Urssaf, déclarez quand même le total : l\'avance déjà reçue sera déduite.');
+        if (pa > 0) add('Déduisez les pensions alimentaires que vous versez.', [paMaj ? cs('6EL') + (nMaj > 1 ? ' / ' + cs('6EM') : '') + ' (enfants majeurs) : <strong>' + eur(paMaj / nMaj) + '</strong> par enfant' : '', paHeb ? cs('6EL') + (nHeb > 1 ? ' / ' + cs('6EM') : '') + ' (enfant hébergé) : <strong>' + eur(P.paHeberge) + '</strong> par enfant, sans justificatif' : '', paAutre ? cs('6GU') + ' : <strong>' + eur(paAutre) + '</strong>' : ''].filter(Boolean).join(' · '), 'Ces sommes sont retirées de votre revenu : <span class="gain">≈ ' + eur(gPa) + ' d\'impôt en moins</span>.' + (paMajVerse > paMaj ? ' Plafond de <strong>6 855 €</strong> par enfant majeur : ' + eur(paMajVerse - paMaj) + ' ne sont pas déductibles.' : '') + ' Une pension pour un enfant en garde alternée n\'est pas déductible. La personne qui la reçoit doit la déclarer.');
+        if (perVerse > 0) add('Déclarez vos versements sur votre PER.', cs('6NS') + ' : <strong>' + eur(per1) + '</strong>' + (per2 ? ' · ' + cs('6NT') + ' : <strong>' + eur(per2) + '</strong>' : ''), 'Ils sont retirés de votre revenu dans la limite de votre plafond' + (perPlafAvis ? '' : ' estimé') + ' (<strong>' + eur(perPlaf) + '</strong>) : <span class="gain">≈ ' + eur(gPer) + ' d\'impôt en moins</span>.' + (perVerse > perPlaf ? ' Attention : ' + eur(perVerse - perPlaf) + ' dépassent le plafond.' : '') + (perPlafAvis ? '' : ' Vérifiez le plafond exact sur votre avis d\'impôt 2025 (rubrique « Plafond épargne retraite ») : il ajoute vos plafonds non utilisés des trois années précédentes.') + (couple ? ' En couple, cochez ' + cs('6QR') + ' pour additionner vos deux plafonds.' : '') + ' L\'argent sera imposé à la sortie : c\'est surtout intéressant si votre tranche est de 30 % ou plus.');
         if (scol > 0) add('Déclarez le nombre de vos enfants scolarisés.', scolRows.map(x => cs(x[1]) + ' : ' + x[0] + ' × ' + String(x[2]).replace('.', ',') + ' € = <strong>' + eur(x[0] * x[2]) + '</strong>').join(' · '), 'Réduction forfaitaire, jamais préremplie' + (scolRows.some(x => x[3]) ? ' (les enfants en garde alternée comptent pour moitié, partagée avec l\'autre parent)' : '') + ' : <span class="gain">' + eur(scol) + '</span>' + (impBase < scol ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
+        if (ehpad > 0) add('Déclarez vos frais d\'hébergement en EHPAD (hébergement et dépendance, aides déduites).', cs('7CD') + ' : <strong>' + eur(ehpad) + '</strong> (' + cs('7CE') + ' pour une seconde personne hébergée)', 'Réduction de 25 % dans la limite de 10 000 € par personne : <span class="gain">' + eur(redEhpad) + '</span>' + (impBase < redEhpad ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
         if (d75 > 0) add('Déclarez vos dons aux organismes d\'aide aux personnes en difficulté dans les cases à 75 % (et non en 7UF).', [dUD ? cs('7UD') + ' (jusqu\'au 13 octobre) : <strong>' + eur(dUD) + '</strong>' : '', dUQ ? cs('7UQ') + ' (à partir du 14 octobre) : <strong>' + eur(dUQ) + '</strong>' : ''].filter(Boolean).join(' · '), 'Réduction de <strong>75 %</strong> jusqu\'à 1 000 € pour les dons faits jusqu\'au 13 octobre 2025, plafond porté à <strong>2 000 €</strong> au total avec les dons faits ensuite. Au-delà : 66 %. Gain : <span class="gain">' + eur(d75b * .75 + (d75 - d75b) * .66) + '</span>.');
         if (d66 > 0) add('Déclarez vos autres dons.', cs('7UF') + ' : <strong>' + eur(d66) + '</strong>', 'Réduction de <strong>66 %</strong> : <span class="gain">' + eur(d66 * .66) + '</span>.');
-        if (fin > 0) add((int ? 'Vérifiez vos intérêts en ' + cs('2TR') + ' (<strong>' + eur(int) + '</strong>)' : '') + (int && div ? ' et ' : '') + (div ? 'vos dividendes en ' + cs('2DC') + ' (<strong>' + eur(div) + '</strong>)' : '') + (opt2 ? ', puis <strong>cochez la case 2OP</strong>.' : ', et <strong>ne cochez pas</strong> la case 2OP.'), opt2 ? cs('2OP') : cs('2OP') + ' vide', opt2 ? 'Barème : <strong>' + eur(bar) + '</strong> contre <strong>' + eur(pfu) + '</strong> en flat tax. Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : 'Flat tax : <strong>' + eur(pfu) + '</strong> contre <strong>' + eur(bar) + '</strong> au barème.');
+        if (syn1 + syn2 > 0) add('Déclarez vos cotisations syndicales.', (syn1 ? cs('7AC') + ' : <strong>' + eur(syn1) + '</strong>' : '') + (syn1 && syn2 ? ' · ' : '') + (syn2 ? cs('7AE') + ' : <strong>' + eur(syn2) + '</strong>' : ''), 'Crédit d\'impôt de 66 % (limité à 1 % des salaires et pensions) : <span class="gain">' + eur(credSyn) + '</span>, versé même sans impôt à payer.');
+        if ((useReels && F1.fSyn) || (useReels2 && F2.fSyn)) add('Ne déclarez pas les cotisations syndicales en 7AC / 7AE pour la personne aux frais réels.', 'Incluses dans ' + (useReels && F1.fSyn ? cs('1AK') : '') + (useReels && F1.fSyn && useReels2 && F2.fSyn ? ' et ' : '') + (useReels2 && F2.fSyn ? cs('1BK') : ''), 'Aux frais réels, elles font partie des frais déduits : elles ne peuvent pas compter deux fois.');
+        if (fin > 0) add((int ? 'Vérifiez vos intérêts en ' + cs('2TR') + ' (<strong>' + eur(int) + '</strong>)' : '') + (int && div ? ' et ' : '') + (div ? 'vos dividendes en ' + cs('2DC') + ' (<strong>' + eur(div) + '</strong>)' : '') + (opt2 ? ', puis <strong>cochez la case 2OP</strong>.' : ', et <strong>ne cochez pas</strong> la case 2OP.'), opt2 ? cs('2OP') + ' · ' + cs('2BH') + ' : <strong>' + eur(fin) + '</strong> (à vérifier)' : cs('2OP') + ' vide', opt2 ? 'Barème : <strong>' + eur(bar) + '</strong> contre <strong>' + eur(pfu) + '</strong> en flat tax, plus <strong>' + eur(csgGain) + '</strong> d\'impôt en moins l\'an prochain grâce à la CSG déductible. Gain total : <span class="gain">' + eur(pfu - bar + csgGain) + '</span>.' : 'Flat tax : <strong>' + eur(pfu) + '</strong> contre <strong>' + eur(bar) + '</strong> au barème (' + eur(bar - csgGain) + ' en comptant la CSG déductible l\'an prochain).');
 
         // 2. Pièges
         const T = [];
         const trap = (t, p, fix) => T.push('<div class="item trap"><div class="k">Le piège</div><strong>' + t + '</strong><div style="margin-top:.35rem">' + p + '</div><div class="k" style="margin-top:.5rem">La correction</div><div>' + fix + '</div></div>');
-        if (hs > 0) trap('Heures supplémentaires mal reprises', 'Elles sont souvent ajoutées au salaire imposable au lieu d\'être exonérées.', 'Rubrique « Traitements et salaires » : ' + cs('1GH') + ' doit afficher <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong> ; retirez ce montant de ' + cs('1AJ') + ' s\'il y figure.');
+        if (hs > 0 || hs2 > 0) trap('Heures supplémentaires mal reprises', 'Elles sont souvent ajoutées au salaire imposable au lieu d\'être exonérées.', 'Rubrique « Traitements et salaires » : ' + (hs > 0 ? cs('1GH') + ' doit afficher <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong>' : '') + (hs > 0 && hs2 > 0 ? ' et ' : '') + (hs2 > 0 ? cs('1HH') + ' <strong>' + eur(Math.min(hs2, P.hsupMax)) + '</strong>' : '') + ' ; retirez ce montant du salaire s\'il y figure.');
         if (apprenti) trap('Salaire d\'apprenti ou gratification déclaré en entier', 'La préremplie reprend souvent la totalité.', 'Remplacez le montant de ' + cs('1AJ') + ' par la seule part au-dessus du SMIC : <strong>' + eur(sal1) + '</strong>.');
-        if (useReels) trap('La déduction de 10 % appliquée par défaut', 'La préremplie ne propose jamais les frais réels.', 'Cliquez sur « Frais réels » et saisissez <strong>' + eur(reels) + '</strong> en ' + cs('1AK') + '.');
+        if (useReels || useReels2) trap('La déduction de 10 % appliquée par défaut', 'La préremplie ne propose jamais les frais réels.', 'Cliquez sur « Frais réels » et saisissez ' + (useReels ? '<strong>' + eur(F1.reels) + '</strong> en ' + cs('1AK') : '') + (useReels && useReels2 ? ' et ' : '') + (useReels2 ? '<strong>' + eur(F2.reels) + '</strong> en ' + cs('1BK') : '') + '.');
         if (fin > 0) trap('La flat tax automatique', 'Sans action, vos placements sont taxés à 12,8 %.', opt2 ? 'Cochez ' + cs('2OP') + ' en bas de la rubrique « Revenus de capitaux mobiliers ».' : 'Ici la flat tax est la bonne option : laissez ' + cs('2OP') + ' vide.');
         if (t) trap('La case T n\'est jamais préremplie', 'Le fisc ne sait pas que vous élevez seul(e) vos enfants.', 'Étape « Situation du foyer » : cochez ' + cs('T') + '.');
-        if (garde.length || scol || d75 || d66) trap('Crédits et réductions oubliés', 'Crèche, scolarité et dons ne sont pas toujours repris (la scolarité jamais).', 'Étape 3 « Réductions et crédits d\'impôt » : ajoutez les rubriques manquantes.');
-        if (T.length < 2) trap('Le salaire prérempli non vérifié', 'Primes exonérées ou indemnités peuvent être ajoutées par erreur.', 'Comparez ' + cs('1AJ') + ' au « net imposable » cumulé de votre fiche de paie de décembre.');
+        if (pen1 + pen2 > 0) trap('Pensions préremplies à vérifier', 'Une pension de réversion, une retraite complémentaire ou une pension d\'un régime étranger peut manquer.', 'Comparez ' + cs('1AS') + (pen2 ? ' et ' + cs('1BS') : '') + ' aux attestations fiscales de toutes vos caisses de retraite. L\'abattement de 10 % est automatique : n\'y touchez pas.');
+        if (chom1 + chom2 > 0) trap('Allocations chômage à contrôler', 'Le montant prérempli peut différer de ce que vous avez réellement reçu.', 'Comparez ' + cs('1AP') + (chom2 ? ' et ' + cs('1BP') : '') + ' à l\'attestation fiscale de France Travail (espace personnel).');
+        if (garde.length || scol || d75 || d66 || dom || pa || perVerse || ehpad || syn1 || syn2) trap('Charges, crédits et réductions oubliés', 'Pensions alimentaires, PER, scolarité, dons, EHPAD et cotisations syndicales ne sont pas préremplis ; emploi à domicile et crèche pas toujours.', 'Étapes « Charges déductibles » et « Réductions et crédits d\'impôt » : ajoutez les rubriques manquantes.');
+        if (T.length < 2 && sal1Prerempli + sal2Prerempli > 0) trap('Le salaire prérempli non vérifié', 'Primes exonérées ou indemnités peuvent être ajoutées par erreur.', 'Comparez ' + cs('1AJ') + ' au « net imposable » cumulé de votre fiche de paie de décembre.');
         if (T.length < 2) trap('La flat tax sur l\'épargne future', 'Si vous percevez un jour des intérêts ou dividendes, ils seront taxés à 12,8 % par défaut.', 'Comparez alors avec l\'option ' + cs('2OP') + ' avant de valider.');
 
         // 3. Astuces
         let tips = '';
-        if (fin > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Vos revenus de placements : flat tax ou case 2OP ?</strong><div style="margin-top:.35rem">Intérêts en ' + cs('2TR') + ' (aucun abattement), dividendes en ' + cs('2DC') + ' (abattement de 40 % seulement avec 2OP).</div><table><tr class="' + (opt2 ? '' : 'best') + '"><td>Flat tax : ' + eur(fin) + ' × 12,8 %</td><td class="r">' + eur(pfu) + '</td></tr><tr class="' + (opt2 ? 'best' : '') + '"><td>Barème ' + cs('2OP') + ' : (' + eur(int) + ' + ' + eur(div) + ' × 0,60) × ' + Math.round(tmi * 100) + ' %</td><td class="r">' + eur(bar) + '</td></tr></table><div>' + (opt2 ? '✅ <strong>Verdict : COCHEZ la case 2OP.</strong> Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : '⛔ <strong>Verdict : NE COCHEZ PAS la case 2OP.</strong>') + '</div></div>';
-        if (reels > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Frais réels contre 10 % automatiques</strong><div style="margin-top:.35rem">Le fisc ne peut pas vous imposer les transports en commun ni contester la puissance de votre voiture (BOFiP, BOI-RSA-BASE-30-50-30-10, § 10).</div><table>' + (fKm ? '<tr><td>Trajets : ' + kmRet + ' km × 2 × ' + dOff + ' jours sur place = ' + Math.round(kmAn).toLocaleString('fr-FR') + ' km</td><td class="r">' + eur(fKm) + '</td></tr>' : '') + (fToll ? '<tr><td>Péages / parking</td><td class="r">' + eur(fToll) + '</td></tr>' : '') + (fRepas ? '<tr><td>Repas : ' + dOff + ' jours sur place × 5,45 €</td><td class="r">' + eur(fRepas) + '</td></tr>' : '') + (fTele ? '<tr><td>Télétravail : ' + dTele + ' jours × 2,70 €' + (dTele * P.tele > P.teleMax ? ' (plafonné à 626,40 €)' : '') + '</td><td class="r">' + eur(fTele) + '</td></tr>' : '') + '<tr class="' + (useReels ? 'best' : '') + '"><td>Total frais réels</td><td class="r">' + eur(reels) + '</td></tr><tr class="' + (useReels ? '' : 'best') + '"><td>Déduction de 10 %</td><td class="r">' + eur(dix1) + '</td></tr></table>' + (dist > P.kmMax && kmRet === P.kmMax ? '<div>Au-delà de 40 km, seuls 40 km sont retenus sans raison particulière.</div>' : '') + (fTele ? '<div>Si votre employeur vous verse une allocation de télétravail, ajoutez-la à votre salaire déclaré.</div>' : '') + '</div>';
+        if (fin > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Vos revenus de placements : flat tax ou case 2OP ?</strong><div style="margin-top:.35rem">Intérêts en ' + cs('2TR') + ' (aucun abattement), dividendes en ' + cs('2DC') + ' (abattement de 40 % seulement avec 2OP). Avec 2OP, une partie de la CSG (6,8 %) se déduit en plus de vos revenus l\'année suivante.</div><table><tr class="' + (opt2 ? '' : 'best') + '"><td>Flat tax : ' + eur(fin) + ' × 12,8 %</td><td class="r">' + eur(pfu) + '</td></tr><tr><td>Barème ' + cs('2OP') + ' : (' + eur(int) + ' + ' + eur(div) + ' × 0,60) × ' + Math.round(tmi * 100) + ' %</td><td class="r">' + eur(bar) + '</td></tr><tr><td>CSG déductible l\'an prochain : ' + eur(fin) + ' × 6,8 % × ' + Math.round(tmi * 100) + ' %</td><td class="r">− ' + eur(csgGain) + '</td></tr><tr class="' + (opt2 ? 'best' : '') + '"><td>Coût réel de l\'option 2OP</td><td class="r">' + eur(bar - csgGain) + '</td></tr></table><div>' + (opt2 ? '✅ <strong>Verdict : COCHEZ la case 2OP.</strong> Gain total : <span class="gain">' + eur(pfu - bar + csgGain) + '</span>.' : '⛔ <strong>Verdict : NE COCHEZ PAS la case 2OP.</strong>') + '</div></div>';
+        const fraisTable = (F, dix, useR, qui) => '<div class="item"><div class="k">L\'astuce</div><strong>Frais réels contre 10 % automatiques' + qui + '</strong><div style="margin-top:.35rem">Le fisc ne peut pas vous imposer les transports en commun ni contester la puissance de votre voiture (BOFiP, BOI-RSA-BASE-30-50-30-10, § 10).</div><table>' + (F.fKm ? '<tr><td>Trajets : ' + F.kmRet + ' km × 2 × ' + F.dOff + ' jours sur place = ' + Math.round(F.kmAn).toLocaleString('fr-FR') + ' km</td><td class="r">' + eur(F.fKm) + '</td></tr>' : '') + (F.fToll ? '<tr><td>Péages / parking</td><td class="r">' + eur(F.fToll) + '</td></tr>' : '') + (F.fRepas ? '<tr><td>Repas : ' + F.dOff + ' jours sur place × 5,45 €</td><td class="r">' + eur(F.fRepas) + '</td></tr>' : '') + (F.fTele ? '<tr><td>Télétravail : ' + F.dTele + ' jours × 2,70 €' + (F.dTele * P.tele > P.teleMax ? ' (plafonné à 626,40 €)' : '') + '</td><td class="r">' + eur(F.fTele) + '</td></tr>' : '') + (F.fSyn ? '<tr><td>Cotisations syndicales</td><td class="r">' + eur(F.fSyn) + '</td></tr>' : '') + '<tr class="' + (useR ? 'best' : '') + '"><td>Total frais réels</td><td class="r">' + eur(F.reels) + '</td></tr><tr class="' + (useR ? '' : 'best') + '"><td>Déduction de 10 %</td><td class="r">' + eur(dix) + '</td></tr></table>' + (F.dist > P.kmMax && F.kmRet === P.kmMax ? '<div>Au-delà de 40 km, seuls 40 km sont retenus sans raison particulière.</div>' : '') + (F.fTele ? '<div>Si l\'employeur verse une allocation de télétravail, ajoutez-la au salaire déclaré.</div>' : '') + '</div>';
+        if (F1.reels > 0) tips += fraisTable(F1, dix1, useReels, couple && F2.reels > 0 ? ' (vous)' : '');
+        if (couple && F2.reels > 0) tips += fraisTable(F2, dix2, useReels2, ' (votre conjoint)');
         if (!tips) tips = '<div class="item"><div class="k">L\'astuce</div>Gardez fiches de paie, attestations et reçus trois ans : c\'est votre meilleure défense en cas de question du fisc.</div>';
 
         // 4. Mention expresse
         const m = [];
-        if (useReels) m.push('J\'opte pour la déduction des frais réels (case 1AK : ' + eur(reels) + ')' + (fKm ? ', comprenant des frais de trajet domicile-travail de ' + kmRet + ' km aller sur ' + dOff + ' jours de présence évalués selon le barème kilométrique officiel' : '') + (fRepas ? ', des frais supplémentaires de repas évalués forfaitairement à la valeur du repas pris au foyer' : '') + (fTele ? ', des frais de télétravail au forfait journalier admis' : '') + '.');
+        const fraisTxt = (F, c) => 'la déduction des frais réels (case ' + c + ' : ' + eur(F.reels) + ')' + (F.fKm ? ', comprenant des frais de trajet domicile-travail de ' + F.kmRet + ' km aller sur ' + F.dOff + ' jours de présence évalués selon le barème kilométrique officiel' : '') + (F.fRepas ? ', des frais supplémentaires de repas évalués forfaitairement à la valeur du repas pris au foyer' : '') + (F.fTele ? ', des frais de télétravail au forfait journalier admis' : '');
+        if (useReels) m.push('J\'opte pour ' + fraisTxt(F1, '1AK') + '.');
+        if (useReels2) m.push('Mon conjoint opte pour ' + fraisTxt(F2, '1BK') + '.');
         if (hsIncluded) m.push('Le salaire déclaré en case 1AJ a été corrigé pour exclure ' + eur(Math.min(hs, P.hsupMax)) + ' d\'heures supplémentaires exonérées, reportées en case 1GH d\'après mon bulletin de paie de décembre.');
+        if (hsIncluded2) m.push('Le salaire déclaré en case 1BJ a été corrigé pour exclure ' + eur(Math.min(hs2, P.hsupMax)) + ' d\'heures supplémentaires exonérées, reportées en case 1HH.');
         if (apprenti) m.push('Ma rémunération d\'apprenti ou de stagiaire est déclarée pour sa seule fraction excédant le SMIC annuel.');
         if (t) m.push('Je vis seul(e) avec mes enfants à charge et coche la case T.');
+        if (sp || L) m.push('Je remplis les conditions de la ou des demi-parts supplémentaires demandées et tiens le justificatif à disposition.');
+        if (pa > 0) m.push('Les pensions alimentaires déduites sont versées en exécution de l\'obligation alimentaire (articles 205 à 211 du Code civil) ; les preuves de versement sont disponibles.');
         m.push('Je tiens l\'ensemble de mes justificatifs à la disposition de l\'administration. Cette déclaration est souscrite de bonne foi et je demande à bénéficier du droit à l\'erreur (loi n° 2018-727 du 10 août 2018) si une précision était nécessaire.');
 
         return '<div class="rep"><div class="alert-success"><div style="font-size:.8rem;font-weight:700;letter-spacing:.05em">📑 RAPPORT D\'OPTIMISATION FISCALE PERSONNALISÉ</div><div style="font-size:1.6rem;font-weight:800;margin:.35rem 0">' + (gain > 0 ? 'Gain estimé : ' + eur(gain) : 'Votre déclaration est déjà optimisée') + '</div><div style="font-size:.85rem">Impôt si vous validez la préremplie : <strong>' + eur(Math.max(0, naive)) + '</strong> · Après corrections : <strong>' + (final < 0 ? 'remboursement de ' + eur(-final) : eur(final)) + '</strong> · ' + String(p).replace('.', ',') + ' parts · tranche ' + Math.round(tmi * 100) + ' %</div></div>'
