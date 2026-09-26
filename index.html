@@ -238,8 +238,12 @@
                         <input type="number" id="input-dividends" min="0" value="0">
                     </div>
                     <div>
-                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dons aide aux personnes (Croix-Rouge, Restos du Cœur…)</span>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dons aide aux personnes (Restos du Cœur, Secours populaire…) jusqu'au 13 octobre 2025</span>
                         <input type="number" id="input-don-75" min="0" value="0">
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dons aide aux personnes à partir du 14 octobre 2025</span>
+                        <input type="number" id="input-don-75b" min="0" value="0">
                     </div>
                     <div>
                         <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Autres dons à des associations</span>
@@ -327,7 +331,7 @@
         abt10: { min: 509, max: 14555 }, qfDemi: 1807, qfT: 4262, recouvrement: 61,
         decote: { seul: 897, couple: 1483, taux: .4525 },
         repas: 5.45, tele: 2.70, kmMax: 40, smic: 21622, hsupMax: 7500,
-        garde: 3500, colucheMax: 1000,
+        garde: 3500, colucheMax: 1000, colucheMax2: 2000, teleMax: 626.40,
         // Barème kilométrique 2026 (revenus 2025), inchangé depuis les revenus 2022 : [a, b, c, d]
         km: { 3:[.529,.316,1065,.370], 4:[.606,.340,1330,.407], 5:[.636,.357,1395,.427], 6:[.665,.374,1457,.447], 7:[.697,.394,1515,.470] },
         moto: { 2:[.395,.099,891,.248], 5:[.468,.082,1158,.275], 6:[.606,.079,1583,.343] },
@@ -431,7 +435,7 @@
         if ($('check-car-electric').checked) fKm *= 1.2;
         const fToll = state.car ? num('input-car-tolls') : 0;
         const fRepas = $('check-lunch').checked ? dOff * P.repas : 0;
-        const fTele = dTele * P.tele;
+        const fTele = Math.min(dTele * P.tele, P.teleMax);
         const reels = fKm + fToll + fRepas + fTele;
         const dix1 = abt10(sal1), dix2 = abt10(sal2);
         const useReels = reels > dix1;
@@ -450,8 +454,11 @@
         const garde = []; for (let k = 1; k <= kids6; k++) { const r = num('input-garde-' + k); garde.push({ k, r, base: Math.min(r, P.garde), c: ['7GA', '7GB', '7GC'][k - 1] }); }
         const credGarde = garde.reduce((a, g) => a + g.base * .5, 0);
         const scol = num('input-kids-college') * 61 + num('input-kids-lycee') * 153 + num('input-kids-sup') * 183;
-        const d75 = num('input-don-75'), d66 = num('input-don-66');
-        const d75b = Math.min(d75, P.colucheMax);
+        // Dons « Coluche » : 1 000 € jusqu'au 13/10/2025 (7UD), plafond global porté à 2 000 € pour les dons suivants (7UQ)
+        const dUD = num('input-don-75'), dUQ = num('input-don-75b'), d66 = num('input-don-66');
+        const d75 = dUD + dUQ;
+        const rUD = Math.min(dUD, P.colucheMax);
+        const d75b = rUD + Math.min(dUQ, P.colucheMax2 - rUD);
         const redDons = d75b * .75 + Math.min(d66 + d75 - d75b, Rfin * .2) * .66;
         const impBase = impot(Rfin);
         const reductions = Math.min(impBase, scol + redDons);
@@ -474,7 +481,7 @@
         if (t) add('Section 1 « Situation du foyer » : cochez « Vous vivez seul(e) avec vos enfants ».', cs('T'), 'Une <strong>demi-part en plus</strong> (' + String(p).replace('.', ',') + ' parts au lieu de ' + String(p - .5).replace('.', ',') + ')' + (gT > 0 ? ' : <span class="gain">≈ ' + eur(gT) + ' d\'impôt en moins</span>' : '') + '. Elle n\'est jamais cochée d\'office.');
         garde.forEach(g => add('Déclarez les frais de garde de l\'enfant ' + g.k + ' (aides CAF / CMG déduites, hors repas).', cs(g.c) + ' : <strong>' + eur(g.base) + '</strong>', g.r > P.garde ? 'Vos dépenses réelles sont de <strong>' + eur(g.r) + '</strong>, mais l\'administration plafonne la base de calcul à <strong>3 500 €</strong> par enfant. Votre gain réel (crédit d\'impôt de 50 %) sera donc de <span class="gain">1 750 €</span>.' : 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(g.base * .5) + '</span>, versé même sans impôt à payer (plafond 3 500 € par enfant, soit 1 750 € maximum).'));
         if (scol > 0) add('Déclarez vos enfants scolarisés.', [['input-kids-college', '7EA', 61], ['input-kids-lycee', '7EC', 153], ['input-kids-sup', '7EF', 183]].filter(x => num(x[0]) > 0).map(x => cs(x[1]) + ' : ' + num(x[0]) + ' × ' + x[2] + ' € = <strong>' + eur(num(x[0]) * x[2]) + '</strong>').join(' · '), 'Réduction forfaitaire, jamais préremplie : <span class="gain">' + eur(scol) + '</span>' + (impBase < scol ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
-        if (d75 > 0) add('Déclarez vos dons aux organismes d\'aide aux personnes en difficulté en 7UD (et non en 7UF).', cs('7UD') + ' : <strong>' + eur(d75) + '</strong>', 'Réduction de <strong>75 %</strong> jusqu\'à 1 000 € : <span class="gain">' + eur(d75b * .75 + (d75 - d75b) * .66) + '</span>.');
+        if (d75 > 0) add('Déclarez vos dons aux organismes d\'aide aux personnes en difficulté dans les cases à 75 % (et non en 7UF).', [dUD ? cs('7UD') + ' (jusqu\'au 13 octobre) : <strong>' + eur(dUD) + '</strong>' : '', dUQ ? cs('7UQ') + ' (à partir du 14 octobre) : <strong>' + eur(dUQ) + '</strong>' : ''].filter(Boolean).join(' · '), 'Réduction de <strong>75 %</strong> jusqu\'à 1 000 € pour les dons faits jusqu\'au 13 octobre 2025, plafond porté à <strong>2 000 €</strong> au total avec les dons faits ensuite. Au-delà : 66 %. Gain : <span class="gain">' + eur(d75b * .75 + (d75 - d75b) * .66) + '</span>.');
         if (d66 > 0) add('Déclarez vos autres dons.', cs('7UF') + ' : <strong>' + eur(d66) + '</strong>', 'Réduction de <strong>66 %</strong> : <span class="gain">' + eur(d66 * .66) + '</span>.');
         if (fin > 0) add((int ? 'Vérifiez vos intérêts en ' + cs('2TR') + ' (<strong>' + eur(int) + '</strong>)' : '') + (int && div ? ' et ' : '') + (div ? 'vos dividendes en ' + cs('2DC') + ' (<strong>' + eur(div) + '</strong>)' : '') + (opt2 ? ', puis <strong>cochez la case 2OP</strong>.' : ', et <strong>ne cochez pas</strong> la case 2OP.'), opt2 ? cs('2OP') : cs('2OP') + ' vide', opt2 ? 'Barème : <strong>' + eur(bar) + '</strong> contre <strong>' + eur(pfu) + '</strong> en flat tax. Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : 'Flat tax : <strong>' + eur(pfu) + '</strong> contre <strong>' + eur(bar) + '</strong> au barème.');
 
@@ -493,7 +500,7 @@
         // 3. Astuces
         let tips = '';
         if (fin > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Vos revenus de placements : flat tax ou case 2OP ?</strong><div style="margin-top:.35rem">Intérêts en ' + cs('2TR') + ' (aucun abattement), dividendes en ' + cs('2DC') + ' (abattement de 40 % seulement avec 2OP).</div><table><tr class="' + (opt2 ? '' : 'best') + '"><td>Flat tax : ' + eur(fin) + ' × 12,8 %</td><td class="r">' + eur(pfu) + '</td></tr><tr class="' + (opt2 ? 'best' : '') + '"><td>Barème ' + cs('2OP') + ' : (' + eur(int) + ' + ' + eur(div) + ' × 0,60) × ' + Math.round(tmi * 100) + ' %</td><td class="r">' + eur(bar) + '</td></tr></table><div>' + (opt2 ? '✅ <strong>Verdict : COCHEZ la case 2OP.</strong> Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : '⛔ <strong>Verdict : NE COCHEZ PAS la case 2OP.</strong>') + '</div></div>';
-        if (reels > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Frais réels contre 10 % automatiques</strong><div style="margin-top:.35rem">Le fisc ne peut pas vous imposer les transports en commun ni contester la puissance de votre voiture (BOFiP, BOI-RSA-BASE-30-50-30-10, § 10).</div><table>' + (fKm ? '<tr><td>Trajets : ' + kmRet + ' km × 2 × ' + dOff + ' jours sur place = ' + Math.round(kmAn).toLocaleString('fr-FR') + ' km</td><td class="r">' + eur(fKm) + '</td></tr>' : '') + (fToll ? '<tr><td>Péages / parking</td><td class="r">' + eur(fToll) + '</td></tr>' : '') + (fRepas ? '<tr><td>Repas : ' + dOff + ' jours sur place × 5,45 €</td><td class="r">' + eur(fRepas) + '</td></tr>' : '') + (fTele ? '<tr><td>Télétravail : ' + dTele + ' jours × 2,70 €</td><td class="r">' + eur(fTele) + '</td></tr>' : '') + '<tr class="' + (useReels ? 'best' : '') + '"><td>Total frais réels</td><td class="r">' + eur(reels) + '</td></tr><tr class="' + (useReels ? '' : 'best') + '"><td>Déduction de 10 %</td><td class="r">' + eur(dix1) + '</td></tr></table>' + (dist > P.kmMax && kmRet === P.kmMax ? '<div>Au-delà de 40 km, seuls 40 km sont retenus sans raison particulière.</div>' : '') + (fTele ? '<div>Si votre employeur vous verse une allocation de télétravail, ajoutez-la à votre salaire déclaré.</div>' : '') + '</div>';
+        if (reels > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Frais réels contre 10 % automatiques</strong><div style="margin-top:.35rem">Le fisc ne peut pas vous imposer les transports en commun ni contester la puissance de votre voiture (BOFiP, BOI-RSA-BASE-30-50-30-10, § 10).</div><table>' + (fKm ? '<tr><td>Trajets : ' + kmRet + ' km × 2 × ' + dOff + ' jours sur place = ' + Math.round(kmAn).toLocaleString('fr-FR') + ' km</td><td class="r">' + eur(fKm) + '</td></tr>' : '') + (fToll ? '<tr><td>Péages / parking</td><td class="r">' + eur(fToll) + '</td></tr>' : '') + (fRepas ? '<tr><td>Repas : ' + dOff + ' jours sur place × 5,45 €</td><td class="r">' + eur(fRepas) + '</td></tr>' : '') + (fTele ? '<tr><td>Télétravail : ' + dTele + ' jours × 2,70 €' + (dTele * P.tele > P.teleMax ? ' (plafonné à 626,40 €)' : '') + '</td><td class="r">' + eur(fTele) + '</td></tr>' : '') + '<tr class="' + (useReels ? 'best' : '') + '"><td>Total frais réels</td><td class="r">' + eur(reels) + '</td></tr><tr class="' + (useReels ? '' : 'best') + '"><td>Déduction de 10 %</td><td class="r">' + eur(dix1) + '</td></tr></table>' + (dist > P.kmMax && kmRet === P.kmMax ? '<div>Au-delà de 40 km, seuls 40 km sont retenus sans raison particulière.</div>' : '') + (fTele ? '<div>Si votre employeur vous verse une allocation de télétravail, ajoutez-la à votre salaire déclaré.</div>' : '') + '</div>';
         if (!tips) tips = '<div class="item"><div class="k">L\'astuce</div>Gardez fiches de paie, attestations et reçus trois ans : c\'est votre meilleure défense en cas de question du fisc.</div>';
 
         // 4. Mention expresse
