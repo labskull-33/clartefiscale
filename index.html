@@ -80,8 +80,20 @@
                             <input type="number" id="input-kids-under6" min="0" value="0">
                         </div>
                         <div>
-                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Collégiens / Lycéens</span>
-                            <input type="number" id="input-kids-school" min="0" value="0">
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Collégiens</span>
+                            <input type="number" id="input-kids-college" min="0" value="0">
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Lycéens</span>
+                            <input type="number" id="input-kids-lycee" min="0" value="0">
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Étudiants (supérieur)</span>
+                            <input type="number" id="input-kids-sup" min="0" value="0">
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Autres enfants à charge</span>
+                            <input type="number" id="input-kids-other" min="0" value="0">
                         </div>
                     </div>
                 </div>
@@ -99,12 +111,24 @@
                     <label>Votre Revenu Net Imposable Annuel (€)</label>
                     <input type="number" id="input-income" placeholder="Ex: 28500" value="0">
                 </div>
+                <div id="spouse-fields" class="hidden" style="margin-bottom: 1.5rem;">
+                    <label>Revenu Net Imposable Annuel de votre conjoint (€)</label>
+                    <input type="number" id="input-income-2" placeholder="Ex: 24000" value="0">
+                </div>
                 <div style="margin-bottom: 2rem;">
                     <label>Situations particulières cette année :</label>
                     <label class="checkbox-container">
                         <input type="checkbox" id="check-hours">
                         <span style="font-size: 0.875rem; font-weight: 500;">J'ai effectué des Heures Supplémentaires</span>
                     </label>
+                    <div id="hours-fields" class="hidden" style="margin-top: 0.5rem;">
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Montant des heures sup exonérées (fiche de paie de décembre)</span>
+                        <input type="number" id="input-hours" min="0" value="0">
+                        <label class="checkbox-container" style="margin-top: 0.5rem;">
+                            <input type="checkbox" id="check-hours-included">
+                            <span style="font-size: 0.875rem; font-weight: 500;">Ce montant est inclus dans mon revenu ci-dessus</span>
+                        </label>
+                    </div>
                     <label class="checkbox-container">
                         <input type="checkbox" id="check-apprentice">
                         <span style="font-size: 0.875rem; font-weight: 500;">Je suis Apprenti(e) ou Stagiaire</span>
@@ -127,9 +151,303 @@
                         <button onclick="pickTransport(false)" class="btn-select active" id="opt-navigo">Transports / Télétravail</button>
                     </div>
                 </div>
-                <div id="car-fields" class="hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                <div id="car-fields" class="hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
                     <div class="grid-3" style="margin-top: 0; margin-bottom: 1rem;">
                         <div>
                             <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Puissance (CV)</span>
                             <input type="number" id="input-car-cv" value="5">
                         </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Distance aller (km)</span>
+                            <input type="number" id="input-car-km" min="0" value="0">
+                        </div>
+                        <div>
+                            <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Péages / parking (€/an)</span>
+                            <input type="number" id="input-car-tolls" min="0" value="0">
+                        </div>
+                    </div>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-car-electric">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Véhicule 100 % électrique (+20 %)</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-car-justified">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Plus de 40 km avec une raison valable (emploi du conjoint, garde d'enfant…)</span>
+                    </label>
+                </div>
+                <div class="grid-2" style="margin-top: 0; margin-bottom: 1.5rem;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Jours travaillés au total</span>
+                        <input type="number" id="input-days-total" min="0" value="0">
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dont jours sur place</span>
+                        <input type="number" id="input-days-office" min="0" value="0">
+                    </div>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-telework">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Les autres jours sont du télétravail (2,70 € / jour)</span>
+                    </label>
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="check-lunch">
+                        <span style="font-size: 0.875rem; font-weight: 500;">Je déjeune hors de chez moi les jours sur place (5,45 € / jour)</span>
+                    </label>
+                </div>
+                <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
+                    <button onclick="changeScreen('work', 'income')" class="btn-outline">Retour</button>
+                    <button onclick="changeScreen('work', 'savings')" class="btn-violet">Continuer ➔</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4 -->
+            <div id="step-savings" class="hidden">
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                <h2>Étape 4 : Épargne, Garde &amp; Dons</h2>
+                <div id="childcare-fields" class="hidden" style="margin-bottom: 1.5rem;">
+                    <label>Reste à charge pour la garde des enfants de moins de 6 ans (€, aides CAF / CMG déduites, hors repas)</label>
+                    <div class="grid-3" id="childcare-inputs" style="margin-top: 0;"></div>
+                </div>
+                <div class="grid-2" style="margin-top: 0; margin-bottom: 1.5rem;">
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Intérêts perçus (hors Livret A / LDDS)</span>
+                        <input type="number" id="input-interest" min="0" value="0">
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dividendes perçus (hors PEA)</span>
+                        <input type="number" id="input-dividends" min="0" value="0">
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Dons aide aux personnes (Croix-Rouge, Restos du Cœur…)</span>
+                        <input type="number" id="input-don-75" min="0" value="0">
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Autres dons à des associations</span>
+                        <input type="number" id="input-don-66" min="0" value="0">
+                    </div>
+                </div>
+                <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
+                    <button onclick="changeScreen('savings', 'work')" class="btn-outline">Retour</button>
+                    <button onclick="generateReport()" class="btn-mint">Générer mon rapport ➔</button>
+                </div>
+            </div>
+
+            <!-- CHARGEMENT -->
+            <div id="step-loading" class="hidden">
+                <div class="loader"></div>
+                <p style="color: #64748b;">Analyse de votre situation…</p>
+            </div>
+
+            <!-- RAPPORT -->
+            <div id="step-report" class="hidden" style="text-align: left;">
+                <div id="report-content"></div>
+                <div class="grid-2" style="grid-template-columns: 1fr 2fr; margin-top: 1.5rem;">
+                    <button onclick="changeScreen('report', 'family')" class="btn-outline">Modifier</button>
+                    <button onclick="copyReport()" class="btn-mint" id="btn-copy">Copier le rapport</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <style>
+        .rep h3 { font-size: 1.1rem; font-weight: 800; color: #4338ca; margin: 1.75rem 0 0.75rem; }
+        .rep .item { background: #f5f3ff; border-radius: 0.75rem; padding: 1rem; margin-bottom: 0.75rem; font-size: 0.925rem; line-height: 1.55; }
+        .rep .item.trap { background: #fef2f2; }
+        .rep .k { font-size: 0.7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #64748b; }
+        .rep .case { font-family: ui-monospace, Menlo, monospace; font-weight: 700; background: #e0e7ff; color: #4338ca; border-radius: 0.35rem; padding: 0 0.35rem; white-space: nowrap; }
+        .rep .gain { color: #059669; font-weight: 700; }
+        .rep table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin: 0.5rem 0; }
+        .rep td { padding: 0.4rem 0.3rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+        .rep td.r { text-align: right; white-space: nowrap; }
+        .rep tr.best td { background: #ecfdf5; font-weight: 700; }
+        .rep .quote { background: #eef2ff; border: 1px dashed #4338ca; border-radius: 0.75rem; padding: 1rem; font-style: italic; font-size: 0.9rem; }
+        .rep .note { font-size: 0.8rem; color: #64748b; margin-top: 1.5rem; }
+    </style>
+
+    <script>
+    /* ===== Paramètres (revenus 2025, estimations à vérifier) ===== */
+    const P = {
+        tranches: [[11600,0],[29579,.11],[84577,.30],[181917,.41],[Infinity,.45]],
+        abt10: { min: 504, max: 14426 }, qfDemi: 1807, qfT: 4262,
+        decote: { seul: 897, couple: 1483, taux: .4525 },
+        repas: 5.45, tele: 2.70, kmMax: 40, smic: 21622, hsupMax: 7500,
+        garde: 3500, colucheMax: 1000,
+        km: { 3:[.529,.316,1065,.370], 4:[.606,.340,1330,.407], 5:[.636,.357,1395,.427], 6:[.665,.374,1457,.447], 7:[.697,.394,1515,.470] }
+    };
+    const state = { status: 'solo', car: false };
+    const $ = id => document.getElementById(id);
+    const num = id => { const el = $(id); const n = el ? parseFloat(String(el.value).replace(',', '.')) : 0; return isFinite(n) && n > 0 ? n : 0; };
+    const eur = n => Math.round(n).toLocaleString('fr-FR') + ' €';
+    const cs = c => '<span class="case">Case ' + c + '</span>';
+
+    /* ===== Navigation ===== */
+    function changeScreen(from, to) {
+        $('step-' + from).classList.add('hidden');
+        $('step-' + to).classList.remove('hidden');
+        if (to === 'savings') buildChildcare();
+        window.scrollTo(0, 0);
+    }
+    function pickStatus(s) {
+        state.status = s;
+        ['solo', 'couple', 'alone-kids'].forEach(k => $('opt-' + k).classList.toggle('active', k === s));
+        $('spouse-fields').classList.toggle('hidden', s !== 'couple');
+    }
+    function pickTransport(car) {
+        state.car = car;
+        $('opt-car').classList.toggle('active', car);
+        $('opt-navigo').classList.toggle('active', !car);
+        $('car-fields').classList.toggle('hidden', !car);
+    }
+    $('check-hours').addEventListener('change', e => $('hours-fields').classList.toggle('hidden', !e.target.checked));
+    function buildChildcare() {
+        const n = Math.min(3, num('input-kids-under6'));
+        $('childcare-fields').classList.toggle('hidden', n === 0);
+        const box = $('childcare-inputs');
+        const old = [...box.querySelectorAll('input')].map(i => i.value);
+        box.innerHTML = '';
+        for (let k = 1; k <= n; k++) {
+            box.insertAdjacentHTML('beforeend', '<div><span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Enfant ' + k + '</span><input type="number" id="input-garde-' + k + '" min="0" value="' + (old[k - 1] || 0) + '"></div>');
+        }
+    }
+
+    /* ===== Calcul de l'impôt ===== */
+    function bareme(q) { let t = 0, prev = 0; for (const [lim, r] of P.tranches) { if (q > prev) t += (Math.min(q, lim) - prev) * r; prev = lim; } return t; }
+    function tmiOf(q) { for (const [lim, r] of P.tranches) if (q <= lim) return r; return .45; }
+    function nbKids() { return num('input-kids-under6') + num('input-kids-college') + num('input-kids-lycee') + num('input-kids-sup') + num('input-kids-other'); }
+    function parts(withT) {
+        const n = nbKids(); const couple = state.status === 'couple';
+        let p = (couple ? 2 : 1) + (n <= 2 ? n * .5 : 1 + (n - 2));
+        const t = withT && state.status === 'alone-kids' && n > 0;
+        if (t) p += .5;
+        return { p, base: couple ? 2 : 1, t, couple };
+    }
+    function impot(R, withT = true) {
+        const { p, base, t, couple } = parts(withT);
+        const full = p * bareme(R / p), ref = base * bareme(R / base);
+        const demi = Math.round((p - base) * 2);
+        const plafond = t ? P.qfT + Math.max(0, demi - 1) * P.qfDemi : demi * P.qfDemi;
+        let imp = Math.max(full, ref - plafond);
+        const seuil = couple ? P.decote.couple : P.decote.seul;
+        const dec = seuil - P.decote.taux * imp;
+        if (dec > 0) imp = Math.max(0, imp - dec);
+        return imp;
+    }
+    const abt10 = s => s <= 0 ? 0 : Math.min(s, Math.min(P.abt10.max, Math.max(P.abt10.min, s * .1)));
+    function kmCost(cv, km) { const [a, b, c, d] = P.km[Math.min(7, Math.max(3, Math.round(cv) || 5))]; return km <= 5000 ? km * a : km <= 20000 ? km * b + c : km * d; }
+
+    /* ===== Rapport ===== */
+    function generateReport() {
+        changeScreen('savings', 'loading');
+        setTimeout(() => { $('report-content').innerHTML = buildReport(); changeScreen('loading', 'report'); }, 700);
+    }
+    function buildReport() {
+        const couple = state.status === 'couple';
+        // Salaire déclarant 1
+        let sal1 = num('input-income');
+        const hs = $('check-hours').checked ? num('input-hours') : 0;
+        const hsIncluded = hs > 0 && $('check-hours-included').checked;
+        const sal1Prerempli = sal1;
+        if (hsIncluded) sal1 = Math.max(0, sal1 - Math.min(hs, P.hsupMax));
+        const apprenti = $('check-apprentice').checked;
+        if (apprenti) sal1 = Math.max(0, sal1 - P.smic);
+        const sal2 = couple ? num('input-income-2') : 0;
+        // Frais réels déclarant 1
+        const dTot = num('input-days-total');
+        const dOff = dTot ? Math.min(num('input-days-office'), dTot) : num('input-days-office');
+        const dTele = $('check-telework').checked ? Math.max(0, dTot - dOff) : 0;
+        const dist = state.car ? num('input-car-km') : 0;
+        const kmRet = dist > P.kmMax && !$('check-car-justified').checked ? P.kmMax : dist;
+        const kmAn = kmRet * 2 * dOff;
+        let fKm = dist ? kmCost(num('input-car-cv'), kmAn) : 0;
+        if ($('check-car-electric').checked) fKm *= 1.2;
+        const fToll = state.car ? num('input-car-tolls') : 0;
+        const fRepas = $('check-lunch').checked ? dOff * P.repas : 0;
+        const fTele = dTele * P.tele;
+        const reels = fKm + fToll + fRepas + fTele;
+        const dix1 = abt10(sal1), dix2 = abt10(sal2);
+        const useReels = reels > dix1;
+        const net1 = sal1 - (useReels ? Math.min(reels, sal1) : dix1);
+        const R = Math.max(0, net1 + sal2 - dix2);
+        const Rdix = Math.max(0, sal1 - dix1 + sal2 - dix2);
+        // Placements
+        const int = num('input-interest'), div = num('input-dividends'), fin = int + div;
+        const { p, t } = parts(true);
+        const tmi = tmiOf(R / p);
+        const pfu = fin * .128, bar = (int + div * .6) * tmi;
+        const opt2 = fin > 0 && bar < pfu;
+        const Rfin = opt2 ? R + int + div * .6 : R;
+        // Réductions & crédits
+        const kids6 = Math.min(3, num('input-kids-under6'));
+        const garde = []; for (let k = 1; k <= kids6; k++) { const r = num('input-garde-' + k); garde.push({ k, r, base: Math.min(r, P.garde), c: ['7GA', '7GB', '7GC'][k - 1] }); }
+        const credGarde = garde.reduce((a, g) => a + g.base * .5, 0);
+        const scol = num('input-kids-college') * 61 + num('input-kids-lycee') * 153 + num('input-kids-sup') * 183;
+        const d75 = num('input-don-75'), d66 = num('input-don-66');
+        const d75b = Math.min(d75, P.colucheMax);
+        const redDons = d75b * .75 + Math.min(d66 + d75 - d75b, Rfin * .2) * .66;
+        const impBase = impot(Rfin);
+        const reductions = Math.min(impBase, scol + redDons);
+        const final = impBase - reductions + (opt2 ? 0 : pfu) - credGarde;
+        const naive = impot(Math.max(0, sal1Prerempli - abt10(sal1Prerempli) + sal2 - dix2), false) + pfu;
+        const gain = Math.max(0, naive - final);
+        const gReels = impot(Rdix) - impot(R);
+        const gT = t ? impot(Rfin, false) - impot(Rfin) : 0;
+
+        // 1. Actions
+        const A = [];
+        const add = (a, c, why) => A.push('<div class="item"><div class="k">Action ' + (A.length + 1) + '</div><div>' + a + '</div><div style="margin-top:.35rem"><span class="k">Case à cocher · </span>' + c + '</div><div style="margin-top:.35rem"><span class="k">Pourquoi c\'est important · </span>' + why + '</div></div>');
+        if (hsIncluded) add('Corrigez votre salaire : il inclut vos heures supplémentaires exonérées.', cs('1AJ') + ' : <strong>' + eur(sal1 + (apprenti ? P.smic : 0)) + '</strong> au lieu de ' + eur(sal1Prerempli) + ' · ' + cs('1GH') + ' : <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong>', 'Les heures sup sont exonérées jusqu\'à <strong>7 500 €</strong>. Laissées dans le salaire, elles vous coûtent <span class="gain">≈ ' + eur(Math.min(hs, P.hsupMax) * tmi) + '</span>.');
+        else if (hs > 0) add('Vérifiez le montant prérempli de vos heures supplémentaires.', cs('1GH') + ' : <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong>', 'Elles doivent apparaître en 1GH et non dans le salaire imposable ' + cs('1AJ') + '.');
+        if (apprenti) add('Ne déclarez que la part de votre rémunération qui dépasse le SMIC annuel.', cs('1AJ') + ' : <strong>' + eur(sal1) + '</strong>', 'Salaire d\'apprenti et gratification de stage sont exonérés jusqu\'à <strong>' + eur(P.smic) + '</strong>.');
+        if (useReels) add('Optez pour les frais réels.', cs('1AK') + ' : <strong>' + eur(reels) + '</strong>', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) dépassent les 10 % automatiques (<strong>' + eur(dix1) + '</strong>) : <span class="gain">≈ ' + eur(gReels) + ' d\'impôt en moins</span>.');
+        else add('Gardez la déduction automatique de 10 %.', cs('1AK') + ' vide', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) sont inférieurs aux 10 % (<strong>' + eur(dix1) + '</strong>).');
+        if (t) add('Section 1 « Situation du foyer » : cochez « Vous vivez seul(e) avec vos enfants ».', cs('T'), 'Une <strong>demi-part en plus</strong> (' + String(p).replace('.', ',') + ' parts au lieu de ' + String(p - .5).replace('.', ',') + ')' + (gT > 0 ? ' : <span class="gain">≈ ' + eur(gT) + ' d\'impôt en moins</span>' : '') + '. Elle n\'est jamais cochée d\'office.');
+        garde.forEach(g => add('Déclarez les frais de garde de l\'enfant ' + g.k + ' (aides CAF / CMG déduites, hors repas).', cs(g.c) + ' : <strong>' + eur(g.base) + '</strong>', g.r > P.garde ? 'Vos dépenses réelles sont de <strong>' + eur(g.r) + '</strong>, mais l\'administration plafonne la base de calcul à <strong>3 500 €</strong> par enfant. Votre gain réel (crédit d\'impôt de 50 %) sera donc de <span class="gain">1 750 €</span>.' : 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(g.base * .5) + '</span>, versé même sans impôt à payer (plafond 3 500 € par enfant, soit 1 750 € maximum).'));
+        if (scol > 0) add('Déclarez vos enfants scolarisés.', [['input-kids-college', '7EA', 61], ['input-kids-lycee', '7EC', 153], ['input-kids-sup', '7EF', 183]].filter(x => num(x[0]) > 0).map(x => cs(x[1]) + ' : ' + num(x[0]) + ' × ' + x[2] + ' € = <strong>' + eur(num(x[0]) * x[2]) + '</strong>').join(' · '), 'Réduction forfaitaire, jamais préremplie : <span class="gain">' + eur(scol) + '</span>' + (impBase < scol ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
+        if (d75 > 0) add('Déclarez vos dons aux organismes d\'aide aux personnes en difficulté en 7UD (et non en 7UF).', cs('7UD') + ' : <strong>' + eur(d75) + '</strong>', 'Réduction de <strong>75 %</strong> jusqu\'à 1 000 € : <span class="gain">' + eur(d75b * .75 + (d75 - d75b) * .66) + '</span>.');
+        if (d66 > 0) add('Déclarez vos autres dons.', cs('7UF') + ' : <strong>' + eur(d66) + '</strong>', 'Réduction de <strong>66 %</strong> : <span class="gain">' + eur(d66 * .66) + '</span>.');
+        if (fin > 0) add((int ? 'Vérifiez vos intérêts en ' + cs('2TR') + ' (<strong>' + eur(int) + '</strong>)' : '') + (int && div ? ' et ' : '') + (div ? 'vos dividendes en ' + cs('2DC') + ' (<strong>' + eur(div) + '</strong>)' : '') + (opt2 ? ', puis <strong>cochez la case 2OP</strong>.' : ', et <strong>ne cochez pas</strong> la case 2OP.'), opt2 ? cs('2OP') : cs('2OP') + ' vide', opt2 ? 'Barème : <strong>' + eur(bar) + '</strong> contre <strong>' + eur(pfu) + '</strong> en flat tax. Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : 'Flat tax : <strong>' + eur(pfu) + '</strong> contre <strong>' + eur(bar) + '</strong> au barème.');
+
+        // 2. Pièges
+        const T = [];
+        const trap = (t, p, fix) => T.push('<div class="item trap"><div class="k">Le piège</div><strong>' + t + '</strong><div style="margin-top:.35rem">' + p + '</div><div class="k" style="margin-top:.5rem">La correction</div><div>' + fix + '</div></div>');
+        if (hs > 0) trap('Heures supplémentaires mal reprises', 'Elles sont souvent ajoutées au salaire imposable au lieu d\'être exonérées.', 'Rubrique « Traitements et salaires » : ' + cs('1GH') + ' doit afficher <strong>' + eur(Math.min(hs, P.hsupMax)) + '</strong> ; retirez ce montant de ' + cs('1AJ') + ' s\'il y figure.');
+        if (apprenti) trap('Salaire d\'apprenti ou gratification déclaré en entier', 'La préremplie reprend souvent la totalité.', 'Remplacez le montant de ' + cs('1AJ') + ' par la seule part au-dessus du SMIC : <strong>' + eur(sal1) + '</strong>.');
+        if (useReels) trap('La déduction de 10 % appliquée par défaut', 'La préremplie ne propose jamais les frais réels.', 'Cliquez sur « Frais réels » et saisissez <strong>' + eur(reels) + '</strong> en ' + cs('1AK') + '.');
+        if (fin > 0) trap('La flat tax automatique', 'Sans action, vos placements sont taxés à 12,8 %.', opt2 ? 'Cochez ' + cs('2OP') + ' en bas de la rubrique « Revenus de capitaux mobiliers ».' : 'Ici la flat tax est la bonne option : laissez ' + cs('2OP') + ' vide.');
+        if (t) trap('La case T n\'est jamais préremplie', 'Le fisc ne sait pas que vous élevez seul(e) vos enfants.', 'Étape « Situation du foyer » : cochez ' + cs('T') + '.');
+        if (garde.length || scol || d75 || d66) trap('Crédits et réductions oubliés', 'Crèche, scolarité et dons ne sont pas toujours repris (la scolarité jamais).', 'Étape 3 « Réductions et crédits d\'impôt » : ajoutez les rubriques manquantes.');
+        if (T.length < 2) trap('Le salaire prérempli non vérifié', 'Primes exonérées ou indemnités peuvent être ajoutées par erreur.', 'Comparez ' + cs('1AJ') + ' au « net imposable » cumulé de votre fiche de paie de décembre.');
+        if (T.length < 2) trap('La flat tax sur l\'épargne future', 'Si vous percevez un jour des intérêts ou dividendes, ils seront taxés à 12,8 % par défaut.', 'Comparez alors avec l\'option ' + cs('2OP') + ' avant de valider.');
+
+        // 3. Astuces
+        let tips = '';
+        if (fin > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Vos revenus de placements : flat tax ou case 2OP ?</strong><div style="margin-top:.35rem">Intérêts en ' + cs('2TR') + ' (aucun abattement), dividendes en ' + cs('2DC') + ' (abattement de 40 % seulement avec 2OP).</div><table><tr class="' + (opt2 ? '' : 'best') + '"><td>Flat tax : ' + eur(fin) + ' × 12,8 %</td><td class="r">' + eur(pfu) + '</td></tr><tr class="' + (opt2 ? 'best' : '') + '"><td>Barème ' + cs('2OP') + ' : (' + eur(int) + ' + ' + eur(div) + ' × 0,60) × ' + Math.round(tmi * 100) + ' %</td><td class="r">' + eur(bar) + '</td></tr></table><div>' + (opt2 ? '✅ <strong>Verdict : COCHEZ la case 2OP.</strong> Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : '⛔ <strong>Verdict : NE COCHEZ PAS la case 2OP.</strong>') + '</div></div>';
+        if (reels > 0) tips += '<div class="item"><div class="k">L\'astuce</div><strong>Frais réels contre 10 % automatiques</strong><div style="margin-top:.35rem">Le fisc ne peut pas vous imposer les transports en commun ni contester la puissance de votre voiture (BOFiP, BOI-RSA-BASE-30-50-30-10, § 10).</div><table>' + (fKm ? '<tr><td>Trajets : ' + kmRet + ' km × 2 × ' + dOff + ' jours sur place = ' + Math.round(kmAn).toLocaleString('fr-FR') + ' km</td><td class="r">' + eur(fKm) + '</td></tr>' : '') + (fToll ? '<tr><td>Péages / parking</td><td class="r">' + eur(fToll) + '</td></tr>' : '') + (fRepas ? '<tr><td>Repas : ' + dOff + ' jours sur place × 5,45 €</td><td class="r">' + eur(fRepas) + '</td></tr>' : '') + (fTele ? '<tr><td>Télétravail : ' + dTele + ' jours × 2,70 €</td><td class="r">' + eur(fTele) + '</td></tr>' : '') + '<tr class="' + (useReels ? 'best' : '') + '"><td>Total frais réels</td><td class="r">' + eur(reels) + '</td></tr><tr class="' + (useReels ? '' : 'best') + '"><td>Déduction de 10 %</td><td class="r">' + eur(dix1) + '</td></tr></table>' + (dist > P.kmMax && kmRet === P.kmMax ? '<div>Au-delà de 40 km, seuls 40 km sont retenus sans raison particulière.</div>' : '') + (fTele ? '<div>Si votre employeur vous verse une allocation de télétravail, ajoutez-la à votre salaire déclaré.</div>' : '') + '</div>';
+        if (!tips) tips = '<div class="item"><div class="k">L\'astuce</div>Gardez fiches de paie, attestations et reçus trois ans : c\'est votre meilleure défense en cas de question du fisc.</div>';
+
+        // 4. Mention expresse
+        const m = [];
+        if (useReels) m.push('J\'opte pour la déduction des frais réels (case 1AK : ' + eur(reels) + ')' + (fKm ? ', comprenant des frais de trajet domicile-travail de ' + kmRet + ' km aller sur ' + dOff + ' jours de présence évalués selon le barème kilométrique officiel' : '') + (fRepas ? ', des frais supplémentaires de repas évalués forfaitairement à la valeur du repas pris au foyer' : '') + (fTele ? ', des frais de télétravail au forfait journalier admis' : '') + '.');
+        if (hsIncluded) m.push('Le salaire déclaré en case 1AJ a été corrigé pour exclure ' + eur(Math.min(hs, P.hsupMax)) + ' d\'heures supplémentaires exonérées, reportées en case 1GH d\'après mon bulletin de paie de décembre.');
+        if (apprenti) m.push('Ma rémunération d\'apprenti ou de stagiaire est déclarée pour sa seule fraction excédant le SMIC annuel.');
+        if (t) m.push('Je vis seul(e) avec mes enfants à charge et coche la case T.');
+        m.push('Je tiens l\'ensemble de mes justificatifs à la disposition de l\'administration. Cette déclaration est souscrite de bonne foi et je demande à bénéficier du droit à l\'erreur (loi n° 2018-727 du 10 août 2018) si une précision était nécessaire.');
+
+        return '<div class="rep"><div class="alert-success"><div style="font-size:.8rem;font-weight:700;letter-spacing:.05em">📑 RAPPORT D\'OPTIMISATION FISCALE PERSONNALISÉ</div><div style="font-size:1.6rem;font-weight:800;margin:.35rem 0">' + (gain > 0 ? 'Gain estimé : ' + eur(gain) : 'Votre déclaration est déjà optimisée') + '</div><div style="font-size:.85rem">Impôt si vous validez la préremplie : <strong>' + eur(Math.max(0, naive)) + '</strong> · Après corrections : <strong>' + (final < 0 ? 'remboursement de ' + eur(-final) : eur(final)) + '</strong> · ' + String(p).replace('.', ',') + ' parts · tranche ' + Math.round(tmi * 100) + ' %</div></div>'
+            + '<h3>🎯 1. Vos Actions Immédiates (Pas à Pas)</h3>' + A.join('')
+            + '<h3>⚠️ 2. Les Pièges Administratifs à Déjouer</h3><p style="font-size:.9rem;color:#64748b;margin-bottom:.75rem">Valider la préremplie les yeux fermés revient à payer un « impôt sur l\'ignorance ».</p>' + T.join('')
+            + '<h3>💡 3. Les "Astuces de Terrain" (Arbitrage Chiffré)</h3>' + tips
+            + '<h3>✍️ 4. Votre "Parachute" (Droit à l\'erreur)</h3><p style="font-size:.9rem;color:#64748b;margin-bottom:.75rem">À copier dans la zone « Mentions expresses » de votre déclaration :</p><div class="quote" id="mention">« ' + m.join(' ') + ' »</div>'
+            + '<div class="item" style="margin-top:1.5rem">🔒 <strong>Note de sécurité :</strong> ce rapport a été généré dans un environnement sécurisé. Vos données de profil n\'ont pas été partagées. Pour votre sécurité, ne transmettez jamais votre numéro fiscal ou vos mots de passe sur un outil d\'intelligence artificielle.</div>'
+            + '<p class="note">Estimation sur la base du barème applicable aux revenus 2025, à vérifier sur le simulateur officiel avant de valider.</p></div>';
+    }
+    function copyReport() {
+        const text = $('report-content').innerText;
+        const done = () => { $('btn-copy').textContent = 'Rapport copié ✓'; setTimeout(() => $('btn-copy').textContent = 'Copier le rapport', 2000); };
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => alert('Copie impossible : sélectionnez le texte à la main.'));
+    }
+    </script>
+</body>
+</html>
