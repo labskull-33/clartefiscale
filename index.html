@@ -112,8 +112,12 @@
                     </div>
                     <label class="checkbox-container">
                         <input type="checkbox" id="check-alternee">
-                        <span style="font-size: 0.875rem; font-weight: 500;">Mes enfants sont en garde alternée (ils vivent autant chez l'autre parent)</span>
+                        <span style="font-size: 0.875rem; font-weight: 500;">Un ou plusieurs enfants sont en garde alternée (ils vivent autant chez l'autre parent)</span>
                     </label>
+                    <div id="alt-fields" class="hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-top: 0.5rem;">
+                        <span style="font-size: 0.8rem; font-weight: 600; color: #334155; display:block; text-align: left;">Combien, dans chaque catégorie, sont en garde alternée ?</span>
+                        <div class="grid-3" id="alt-inputs" style="margin-top: 0.5rem;"></div>
+                    </div>
                 </div>
                 <div class="grid-2" style="grid-template-columns: 1fr 2fr;">
                     <button onclick="changeScreen('family', 'welcome')" class="btn-outline">Retour</button>
@@ -377,8 +381,9 @@
         const box = $('childcare-inputs');
         const old = [...box.querySelectorAll('input')].map(i => i.value);
         box.innerHTML = '';
+        const a = Math.min(n, nbAlt('input-kids-under6'));
         for (let k = 1; k <= n; k++) {
-            box.insertAdjacentHTML('beforeend', '<div><span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Enfant ' + k + '</span><input type="number" id="input-garde-' + k + '" min="0" value="' + (old[k - 1] || 0) + '"></div>');
+            box.insertAdjacentHTML('beforeend', '<div><span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Enfant ' + k + (k > n - a ? ' (garde alternée, votre part)' : '') + '</span><input type="number" id="input-garde-' + k + '" min="0" value="' + (old[k - 1] || 0) + '"></div>');
         }
     }
 
@@ -386,22 +391,43 @@
     function bareme(q) { let t = 0, prev = 0; for (const [lim, r] of P.tranches) { if (q > prev) t += (Math.min(q, lim) - prev) * r; prev = lim; } return t; }
     function tmiOf(q) { for (const [lim, r] of P.tranches) if (q <= lim) return r; return .45; }
     function nbKids() { return num('input-kids-under6') + num('input-kids-college') + num('input-kids-lycee') + num('input-kids-sup') + num('input-kids-other'); }
-    const isAlt = () => $('check-alternee').checked;
+    /* Garde alternée : nombre d'enfants concernés dans chaque catégorie */
+    const KIDS = [['input-kids-under6', 'Moins de 6 ans'], ['input-kids-college', 'Collégiens'], ['input-kids-lycee', 'Lycéens'], ['input-kids-sup', 'Étudiants'], ['input-kids-other', 'Autres']];
+    const nbAlt = id => $('check-alternee').checked ? Math.min(num('alt-' + id), num(id)) : 0;
+    function buildAlt() {
+        const on = $('check-alternee').checked;
+        $('alt-fields').classList.toggle('hidden', !on);
+        const box = $('alt-inputs');
+        const old = {}; box.querySelectorAll('input').forEach(i => old[i.id] = i.value);
+        box.innerHTML = '';
+        KIDS.filter(([id]) => num(id) > 0).forEach(([id, label]) => {
+            // Par défaut, tous les enfants de la catégorie sont en garde alternée
+            const v = old['alt-' + id] !== undefined ? old['alt-' + id] : num(id);
+            box.insertAdjacentHTML('beforeend', '<div><span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">' + label + ' (sur ' + num(id) + ')</span><input type="number" id="alt-' + id + '" min="0" max="' + num(id) + '" value="' + v + '"></div>');
+        });
+        if (on && !box.children.length) box.innerHTML = '<span style="font-size: 0.8rem; color: #64748b;">Indiquez d\'abord le nombre d\'enfants ci-dessus.</span>';
+    }
+    $('check-alternee').addEventListener('change', buildAlt);
+    KIDS.forEach(([id]) => $(id).addEventListener('input', () => { if ($('check-alternee').checked) buildAlt(); }));
     function parts(withT) {
-        const n = nbKids(); const couple = state.status === 'couple'; const alt = isAlt();
-        // Garde alternée : chaque part d'enfant est divisée par deux (1/4 de part pour les deux premiers)
-        let p = (couple ? 2 : 1) + (n <= 2 ? n * .5 : 1 + (n - 2)) * (alt ? .5 : 1);
+        const n = nbKids(); const couple = state.status === 'couple';
+        const a = KIDS.reduce((s, [id]) => s + nbAlt(id), 0), e = n - a;
+        // Enfants à charge exclusive décomptés en premier : 1/2 part pour les deux premiers, 1 part ensuite.
+        // Enfants en garde alternée : moitié de la part de leur rang (1/4 puis 1/2).
+        let kidParts = 0;
+        for (let r = 1; r <= n; r++) kidParts += (r <= 2 ? .5 : 1) * (r > e ? .5 : 1);
+        let p = (couple ? 2 : 1) + kidParts;
         const t = withT && state.status === 'alone-kids' && n > 0;
-        const tBonus = t ? (alt ? .25 : .5) : 0;
+        const tBonus = t ? (e > 0 ? .5 : .25) : 0;
         p += tBonus;
-        return { p, base: couple ? 2 : 1, t, tBonus, alt, couple };
+        return { p, base: couple ? 2 : 1, t, tBonus, excl: e, alt: a, couple };
     }
     function impot(R, withT = true) {
-        const { p, base, t, alt, couple } = parts(withT);
+        const { p, base, t, excl, couple } = parts(withT);
         const full = p * bareme(R / p), ref = base * bareme(R / base);
         const demi = (p - base) * 2; // nombre de demi-parts supplémentaires (0,5 par quart de part)
-        // Case T : la part du premier enfant (demi-part enfant + demi-part T) est plafonnée à 4 262 €, moitié en garde alternée
-        const plafond = t ? (alt ? P.qfT / 2 + (demi - 1) * P.qfDemi : P.qfT + (demi - 2) * P.qfDemi) : demi * P.qfDemi;
+        // Case T : la part du premier enfant (demi-part enfant + demi-part T) est plafonnée à 4 262 €, moitié s'il n'y a que des enfants en garde alternée
+        const plafond = t ? (excl > 0 ? P.qfT + (demi - 2) * P.qfDemi : P.qfT / 2 + (demi - 1) * P.qfDemi) : demi * P.qfDemi;
         let imp = Math.max(full, ref - plafond);
         const seuil = couple ? P.decote.couple : P.decote.seul;
         const dec = seuil - P.decote.taux * imp;
@@ -459,13 +485,23 @@
         const Rfin = opt2 ? R + int + div * .6 : R;
         // Réductions & crédits
         const kids6 = Math.min(3, num('input-kids-under6'));
-        const alt = isAlt(), plafGarde = alt ? P.garde / 2 : P.garde;
-        const garde = []; for (let k = 1; k <= kids6; k++) { const r = num('input-garde-' + k); garde.push({ k, r, base: Math.min(r, plafGarde), c: (alt ? ['7GE', '7GF', '7GG'] : ['7GA', '7GB', '7GC'])[k - 1] }); }
+        // Frais de garde : les derniers enfants de moins de 6 ans saisis sont ceux en garde alternée
+        const alt6 = Math.min(kids6, nbAlt('input-kids-under6'));
+        const garde = []; let nE = 0, nA = 0;
+        for (let k = 1; k <= kids6; k++) {
+            const r = num('input-garde-' + k), alt = k > kids6 - alt6, plaf = alt ? P.garde / 2 : P.garde;
+            const c = alt ? ['7GE', '7GF', '7GG'][nA++] : ['7GA', '7GB', '7GC'][nE++];
+            garde.push({ k, r, alt, plaf, base: Math.min(r, plaf), c });
+        }
         const credGarde = garde.reduce((a, g) => a + g.base * .5, 0);
-        const scolDiv = alt ? 2 : 1;
-        const scolRows = [['input-kids-college', alt ? '7EB' : '7EA', 61 / scolDiv], ['input-kids-lycee', alt ? '7ED' : '7EC', 153 / scolDiv], ['input-kids-sup', alt ? '7EG' : '7EF', 183 / scolDiv]];
-        const scol = scolRows.reduce((a, x) => a + num(x[0]) * x[2], 0);
-        // Dons « Coluche » : 1 000 € jusqu'au 13/10/2025 (7UD), plafond global porté à 2 000 € pour les dons suivants (7UQ)
+        // Scolarité : [nombre, case, montant par enfant]
+        const scolRows = [];
+        [['input-kids-college', '7EA', '7EB', 61], ['input-kids-lycee', '7EC', '7ED', 153], ['input-kids-sup', '7EF', '7EG', 183]].forEach(([id, cE, cA, m]) => {
+            const a = nbAlt(id), e = num(id) - a;
+            if (e > 0) scolRows.push([e, cE, m, false]);
+            if (a > 0) scolRows.push([a, cA, m / 2, true]);
+        });
+        const scol = scolRows.reduce((s, x) => s + x[0] * x[2], 0);        // Dons « Coluche » : 1 000 € jusqu'au 13/10/2025 (7UD), plafond global porté à 2 000 € pour les dons suivants (7UQ)
         const dUD = num('input-don-75'), dUQ = num('input-don-75b'), d66 = num('input-don-66');
         const d75 = dUD + dUQ;
         const rUD = Math.min(dUD, P.colucheMax);
@@ -489,9 +525,9 @@
         if (apprenti) add('Ne déclarez que la part de votre rémunération qui dépasse le SMIC annuel.', cs('1AJ') + ' : <strong>' + eur(sal1) + '</strong>', 'Salaire d\'apprenti et gratification de stage sont exonérés jusqu\'à <strong>' + eur(P.smic) + '</strong>.');
         if (useReels) add('Optez pour les frais réels.', cs('1AK') + ' : <strong>' + eur(reels) + '</strong>', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) dépassent les 10 % automatiques (<strong>' + eur(dix1) + '</strong>) : <span class="gain">≈ ' + eur(gReels) + ' d\'impôt en moins</span>.');
         else add('Gardez la déduction automatique de 10 %.', cs('1AK') + ' vide', 'Vos frais réels (<strong>' + eur(reels) + '</strong>) sont inférieurs aux 10 % (<strong>' + eur(dix1) + '</strong>).');
-        if (t) add('Section 1 « Situation du foyer » : cochez « Vous vivez seul(e) avec vos enfants ».', cs('T'), (alt ? 'Un <strong>quart de part' : 'Une <strong>demi-part') + ' en plus</strong> (' + String(p).replace('.', ',') + ' parts au lieu de ' + String(p - tBonus).replace('.', ',') + ')' + (gT > 0 ? ' : <span class="gain">≈ ' + eur(gT) + ' d\'impôt en moins</span>' : '') + '. Elle n\'est jamais cochée d\'office.');
-        garde.forEach(g => add('Déclarez les frais de garde de l\'enfant ' + g.k + ' (aides CAF / CMG déduites, hors repas' + (alt ? ', seulement la part que vous payez' : '') + ').', cs(g.c) + ' : <strong>' + eur(g.base) + '</strong>', g.r > plafGarde ? 'Vos dépenses réelles sont de <strong>' + eur(g.r) + '</strong>, mais l\'administration plafonne la base de calcul à <strong>' + eur(plafGarde) + '</strong> par enfant' + (alt ? ' en garde alternée (moitié de 3 500 €)' : '') + '. Votre gain réel (crédit d\'impôt de 50 %) sera donc de <span class="gain">' + eur(plafGarde / 2) + '</span>.' : 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(g.base * .5) + '</span>, versé même sans impôt à payer (plafond ' + eur(plafGarde) + ' par enfant' + (alt ? ' en garde alternée' : '') + ', soit ' + eur(plafGarde / 2) + ' maximum).'));
-        if (scol > 0) add('Déclarez le nombre de vos enfants scolarisés' + (alt ? ' en garde alternée' : '') + '.', scolRows.filter(x => num(x[0]) > 0).map(x => cs(x[1]) + ' : ' + num(x[0]) + ' × ' + String(x[2]).replace('.', ',') + ' € = <strong>' + eur(num(x[0]) * x[2]) + '</strong>').join(' · '), 'Réduction forfaitaire, jamais préremplie' + (alt ? ', partagée à moitié avec l\'autre parent' : '') + ' : <span class="gain">' + eur(scol) + '</span>' + (impBase < scol ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
+        if (t) add('Section 1 « Situation du foyer » : cochez « Vous vivez seul(e) avec vos enfants ».', cs('T'), (tBonus < .5 ? 'Un <strong>quart de part' : 'Une <strong>demi-part') + ' en plus</strong> (' + String(p).replace('.', ',') + ' parts au lieu de ' + String(p - tBonus).replace('.', ',') + ')' + (gT > 0 ? ' : <span class="gain">≈ ' + eur(gT) + ' d\'impôt en moins</span>' : '') + '. Elle n\'est jamais cochée d\'office.');
+        garde.forEach(g => add('Déclarez les frais de garde de l\'enfant ' + g.k + (g.alt ? ' (garde alternée)' : '') + ' (aides CAF / CMG déduites, hors repas' + (g.alt ? ', seulement la part que vous payez' : '') + ').', cs(g.c) + ' : <strong>' + eur(g.base) + '</strong>', g.r > g.plaf ? 'Vos dépenses réelles sont de <strong>' + eur(g.r) + '</strong>, mais l\'administration plafonne la base de calcul à <strong>' + eur(g.plaf) + '</strong> par enfant' + (g.alt ? ' en garde alternée (moitié de 3 500 €)' : '') + '. Votre gain réel (crédit d\'impôt de 50 %) sera donc de <span class="gain">' + eur(g.plaf / 2) + '</span>.' : 'Crédit d\'impôt de 50 % : <span class="gain">' + eur(g.base * .5) + '</span>, versé même sans impôt à payer (plafond ' + eur(g.plaf) + ' par enfant' + (g.alt ? ' en garde alternée' : '') + ', soit ' + eur(g.plaf / 2) + ' maximum).'));
+        if (scol > 0) add('Déclarez le nombre de vos enfants scolarisés.', scolRows.map(x => cs(x[1]) + ' : ' + x[0] + ' × ' + String(x[2]).replace('.', ',') + ' € = <strong>' + eur(x[0] * x[2]) + '</strong>').join(' · '), 'Réduction forfaitaire, jamais préremplie' + (scolRows.some(x => x[3]) ? ' (les enfants en garde alternée comptent pour moitié, partagée avec l\'autre parent)' : '') + ' : <span class="gain">' + eur(scol) + '</span>' + (impBase < scol ? ' (non remboursable : elle ne joue que si vous avez de l\'impôt à payer)' : '') + '.');
         if (d75 > 0) add('Déclarez vos dons aux organismes d\'aide aux personnes en difficulté dans les cases à 75 % (et non en 7UF).', [dUD ? cs('7UD') + ' (jusqu\'au 13 octobre) : <strong>' + eur(dUD) + '</strong>' : '', dUQ ? cs('7UQ') + ' (à partir du 14 octobre) : <strong>' + eur(dUQ) + '</strong>' : ''].filter(Boolean).join(' · '), 'Réduction de <strong>75 %</strong> jusqu\'à 1 000 € pour les dons faits jusqu\'au 13 octobre 2025, plafond porté à <strong>2 000 €</strong> au total avec les dons faits ensuite. Au-delà : 66 %. Gain : <span class="gain">' + eur(d75b * .75 + (d75 - d75b) * .66) + '</span>.');
         if (d66 > 0) add('Déclarez vos autres dons.', cs('7UF') + ' : <strong>' + eur(d66) + '</strong>', 'Réduction de <strong>66 %</strong> : <span class="gain">' + eur(d66 * .66) + '</span>.');
         if (fin > 0) add((int ? 'Vérifiez vos intérêts en ' + cs('2TR') + ' (<strong>' + eur(int) + '</strong>)' : '') + (int && div ? ' et ' : '') + (div ? 'vos dividendes en ' + cs('2DC') + ' (<strong>' + eur(div) + '</strong>)' : '') + (opt2 ? ', puis <strong>cochez la case 2OP</strong>.' : ', et <strong>ne cochez pas</strong> la case 2OP.'), opt2 ? cs('2OP') : cs('2OP') + ' vide', opt2 ? 'Barème : <strong>' + eur(bar) + '</strong> contre <strong>' + eur(pfu) + '</strong> en flat tax. Gain exact : <span class="gain">' + eur(pfu - bar) + '</span>.' : 'Flat tax : <strong>' + eur(pfu) + '</strong> contre <strong>' + eur(bar) + '</strong> au barème.');
