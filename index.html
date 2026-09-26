@@ -167,7 +167,12 @@
                 </div>
                 <div id="car-fields" class="hidden" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem;">
                     <div class="grid-3" style="margin-top: 0; margin-bottom: 1rem;">
-                        <div>
+                        <button onclick="pickVehicle('car')" class="btn-select active" id="veh-car">Voiture</button>
+                        <button onclick="pickVehicle('moto')" class="btn-select" id="veh-moto">Moto (plus de 50 cm³)</button>
+                        <button onclick="pickVehicle('cyclo')" class="btn-select" id="veh-cyclo">Scooter (50 cm³ ou moins)</button>
+                    </div>
+                    <div class="grid-3" style="margin-top: 0; margin-bottom: 1rem;">
+                        <div id="cv-field">
                             <span style="font-size: 0.75rem; color: #64748b; display:block; margin-bottom: 0.25rem; text-align: left;">Puissance (CV)</span>
                             <input type="number" id="input-car-cv" value="5">
                         </div>
@@ -323,9 +328,12 @@
         decote: { seul: 897, couple: 1483, taux: .4525 },
         repas: 5.45, tele: 2.70, kmMax: 40, smic: 21622, hsupMax: 7500,
         garde: 3500, colucheMax: 1000,
-        km: { 3:[.529,.316,1065,.370], 4:[.606,.340,1330,.407], 5:[.636,.357,1395,.427], 6:[.665,.374,1457,.447], 7:[.697,.394,1515,.470] }
+        // Barème kilométrique 2026 (revenus 2025), inchangé depuis les revenus 2022 : [a, b, c, d]
+        km: { 3:[.529,.316,1065,.370], 4:[.606,.340,1330,.407], 5:[.636,.357,1395,.427], 6:[.665,.374,1457,.447], 7:[.697,.394,1515,.470] },
+        moto: { 2:[.395,.099,891,.248], 5:[.468,.082,1158,.275], 6:[.606,.079,1583,.343] },
+        cyclo: [.315,.079,711,.198]
     };
-    const state = { status: 'solo', car: false };
+    const state = { status: 'solo', car: false, vehicle: 'car' };
     const $ = id => document.getElementById(id);
     const num = id => { const el = $(id); const n = el ? parseFloat(String(el.value).replace(',', '.')) : 0; return isFinite(n) && n > 0 ? n : 0; };
     const eur = n => Math.round(n).toLocaleString('fr-FR') + ' €';
@@ -348,6 +356,11 @@
         $('opt-car').classList.toggle('active', car);
         $('opt-navigo').classList.toggle('active', !car);
         $('car-fields').classList.toggle('hidden', !car);
+    }
+    function pickVehicle(v) {
+        state.vehicle = v;
+        ['car', 'moto', 'cyclo'].forEach(k => $('veh-' + k).classList.toggle('active', k === v));
+        $('cv-field').classList.toggle('hidden', v === 'cyclo');
     }
     $('check-hours').addEventListener('change', e => $('hours-fields').classList.toggle('hidden', !e.target.checked));
     function buildChildcare() {
@@ -384,7 +397,12 @@
         return imp;
     }
     const abt10 = s => s <= 0 ? 0 : Math.min(s, Math.min(P.abt10.max, Math.max(P.abt10.min, s * .1)));
-    function kmCost(cv, km) { const [a, b, c, d] = P.km[Math.min(7, Math.max(3, Math.round(cv) || 5))]; return km <= 5000 ? km * a : km <= 20000 ? km * b + c : km * d; }
+    function kmCost(cv, km) {
+        cv = Math.round(cv);
+        if (state.vehicle === 'car') { const [a, b, c, d] = P.km[Math.min(7, Math.max(3, cv || 5))]; return km <= 5000 ? km * a : km <= 20000 ? km * b + c : km * d; }
+        const [a, b, c, d] = state.vehicle === 'cyclo' ? P.cyclo : P.moto[!cv || cv > 5 ? 6 : cv <= 2 ? 2 : 5];
+        return km <= 3000 ? km * a : km <= 6000 ? km * b + c : km * d;
+    }
 
     /* ===== Rapport ===== */
     function generateReport() {
