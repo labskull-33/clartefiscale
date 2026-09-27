@@ -26,6 +26,8 @@
         .btn-select { border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; background: white; cursor: pointer; font-weight: 500; font-size: 0.875rem; width: 100%; text-align: center; }
         .btn-select.active { border-color: #4338ca; background: #e0e7ff; color: #4338ca; }
         label { display: block; font-size: 0.875rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem; text-align: left; }
+        /* Champs alignés sur une même ligne, même si les libellés n'ont pas la même longueur */
+        .grid-2 > div:has(> input, > select), .grid-3 > div:has(> input, > select) { display: flex; flex-direction: column; justify-content: flex-end; }
         .mini { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 0.25rem; text-align: left; }
         select, input[type="number"] { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; outline: none; display: block; background: #ffffff; }
         .checkbox-container { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; margin-top: 0.5rem; cursor: pointer; width: 100%; text-align: left; }
