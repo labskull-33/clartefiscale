@@ -43,6 +43,20 @@
         .legal p, .legal ul { margin-top: 0.35rem; }
         .legal ul { padding-left: 1.2rem; }
         .legal a { color: #4338ca; }
+        /* Vignettes d'aide : à droite du formulaire sur grand écran, en bas sur mobile */
+        #help { position: absolute; width: 19rem; background: #ffffff; border: 1px solid #c7d2fe; border-radius: 1rem; padding: 1.1rem 1.2rem; box-shadow: 0 12px 30px -12px rgba(49,46,129,.35); font-size: 0.85rem; line-height: 1.5; color: #334155; text-align: left; transition: top .18s ease, opacity .18s ease; z-index: 20; }
+        #help.hidden-help { opacity: 0; pointer-events: none; }
+        #help .h-top { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+        #help .h-title { font-weight: 800; color: #0f172a; font-size: .95rem; line-height: 1.3; }
+        #help .h-case { font-family: ui-monospace, Menlo, monospace; font-weight: 700; background: #e0e7ff; color: #4338ca; border-radius: .35rem; padding: 0 .4rem; font-size: .75rem; white-space: nowrap; }
+        #help .h-k { font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #64748b; margin-top: .65rem; }
+        #help .h-gain { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; border-radius: .6rem; padding: .5rem .65rem; margin-top: .3rem; }
+        #help .h-close { display: none; margin-left: auto; background: none; border: none; font-size: 1.3rem; line-height: 1; color: #64748b; cursor: pointer; }
+        #help strong { color: #0f172a; }
+        @media (max-width: 1099px) {
+            #help { position: fixed; left: .75rem; right: .75rem; bottom: .75rem; width: auto; max-height: 45vh; overflow-y: auto; top: auto !important; }
+            #help .h-close { display: block; }
+        }
         .legal .small { text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 1rem; }
     </style>
 </head>
@@ -71,6 +85,7 @@
                     Trouver mes optimisations ➔
                 </button>
                 <p style="color: #64748b; margin-top: 1.25rem; font-size: 0.8rem;">
+                    💬 Survolez ou touchez une case : une vignette vous explique quoi mettre et ce que ça peut rapporter.<br>
                     🔒 Gratuit, sans compte. Rien de ce que vous saisissez ne quitte votre appareil. <a href="#vos-donnees" onclick="document.getElementById('vos-donnees').open = true" style="color: #4338ca;">En savoir plus</a>
                 </p>
             </div>
@@ -442,6 +457,8 @@
 
         </div>
     </main>
+
+    <aside id="help" class="hidden-help" aria-live="polite"></aside>
 
     <footer>
         <div class="legal">
@@ -821,6 +838,138 @@
         const done = () => { $('btn-copy').textContent = 'Rapport copié ✓'; setTimeout(() => $('btn-copy').textContent = 'Copier le rapport', 2000); };
         if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => alert('Copie impossible : sélectionnez le texte à la main.'));
     }
+    </script>
+
+    <script>
+    /* ===== Vignettes d'aide : ce que c'est, conseil, ce que ça peut rapporter ===== */
+    // Tranche marginale estimée à partir de ce qui est déjà saisi (null si aucun revenu)
+    function quickTmi() {
+        const couple = state.status === 'couple';
+        const R = .9 * (num('input-income') + num('input-chom') + num('input-pension'))
+            + (couple ? .9 * (num('input-income-2') + num('input-chom-2') + num('input-pension-2')) : 0);
+        return R > 0 ? tmiOf(R / parts().p) : null;
+    }
+    const pct = r => Math.round(r * 100) + ' %';
+    // Gain d'une somme retirée du revenu, selon la tranche estimée
+    function gDeduc(montant, quoi) {
+        const r = quickTmi();
+        if (r === null) return 'Chaque euro ' + quoi + ' fait baisser l\'impôt selon votre tranche : ' + eur(montant) + ' valent ' + eur(montant * .11) + ' dans la tranche à 11 %, ' + eur(montant * .3) + ' à 30 %. Saisissez vos revenus (étape 2) pour un chiffre personnalisé.';
+        if (r === 0) return 'Avec les revenus saisis, vous n\'êtes pas imposable : cette déduction ne changerait rien pour vous cette année.';
+        return 'Votre tranche estimée est de <strong>' + pct(r) + '</strong> : ' + eur(montant) + ' ' + quoi + ' = environ <strong>' + eur(montant * r) + '</strong> d\'impôt en moins.';
+    }
+    const kidGain = 'Chacun des deux premiers enfants ajoute une demi-part (jusqu\'à <strong>1 807 €</strong> d\'impôt en moins chacun), puis une part entière à partir du 3e (jusqu\'à <strong>3 614 €</strong>).';
+    const H = {
+        'opt-solo': ['Célibataire, divorcé(e), veuf(ve)', '', 'Vous déclarez seul(e) : 1 part fiscale.', 'Si vous vivez seul(e) avec des enfants à charge, choisissez plutôt « Parent isolé » : c\'est une demi-part en plus.', () => 'Aucun gain direct, mais les demi-parts spéciales (invalidité, case L) restent possibles plus bas.'],
+        'opt-couple': ['Marié(e) ou pacsé(e)', '', 'Vous déclarez ensemble : 2 parts. Les revenus sont additionnés puis divisés par deux.', 'L\'année du mariage ou du PACS, vous pouvez choisir deux déclarations séparées : cet outil ne le simule pas, comparez sur le simulateur officiel.', () => 'Plus vos deux revenus sont différents, plus l\'imposition commune fait baisser l\'impôt du foyer.'],
+        'opt-alone-kids': ['Parent isolé', 'T', 'Vous vivez seul(e) (sans concubin) avec au moins un enfant à charge.', 'La case T n\'est <strong>jamais cochée d\'office</strong> : c\'est l\'un des oublis les plus fréquents.', () => 'Une demi-part en plus : jusqu\'à <strong>4 262 €</strong> d\'impôt en moins avec le premier enfant (2 131 € en garde alternée).'],
+        'input-kids-under6': ['Enfants de moins de 6 ans', '7GA', 'Enfants nés en 2019 ou après. Ils comptent pour les parts et ouvrent droit au crédit pour frais de garde.', 'Les frais de crèche, d\'assistante maternelle ou de garderie se déclarent à l\'étape 4, aides de la CAF déduites.', () => kidGain + ' Plus 50 % des frais de garde, jusqu\'à <strong>1 750 €</strong> par enfant, versés même sans impôt.'],
+        'input-kids-college': ['Collégiens', '7EA', 'Enfants à charge scolarisés au collège pendant l\'année scolaire 2025-2026.', 'Cette réduction n\'est <strong>jamais préremplie</strong> : il faut indiquer le nombre d\'enfants vous-même.', () => kidGain + ' Plus <strong>61 €</strong> par collégien.'],
+        'input-kids-lycee': ['Lycéens', '7EC', 'Enfants à charge au lycée (général, technologique ou professionnel), y compris en apprentissage au lycée.', 'Jamais préremplie : pensez à la déclarer chaque année.', () => kidGain + ' Plus <strong>153 €</strong> par lycéen.'],
+        'input-kids-sup': ['Étudiants', '7EF', 'Enfants majeurs rattachés à votre foyer (moins de 21 ans, ou moins de 25 ans s\'ils font des études) inscrits dans le supérieur.', 'Rattacher un enfant majeur ou lui verser une pension déductible : les deux sont possibles, comparez selon votre tranche.', () => kidGain + ' Plus <strong>183 €</strong> par étudiant.'],
+        'input-kids-other': ['Autres enfants à charge', '', 'Enfants mineurs non scolarisés au collège ou au lycée, enfants majeurs rattachés qui ne font pas d\'études, enfants handicapés.', 'Un enfant titulaire de la carte d\'invalidité apporte une demi-part supplémentaire (non géré ici).', () => kidGain],
+        'check-alternee': ['Garde alternée', 'H', 'Les enfants vivent autant chez vous que chez l\'autre parent : chaque parent les déclare pour moitié.', 'Les deux parents doivent faire le même choix. Une pension alimentaire pour un enfant en garde alternée n\'est pas déductible.', () => 'Chaque enfant compte pour un quart de part (au lieu d\'une demi) pour les deux premiers. La garde et la scolarité sont divisées par deux.'],
+        'check-inv1': ['Invalidité', 'P', 'Carte « mobilité inclusion » mention invalidité (taux d\'au moins 80 %), pension d\'invalidité d\'au moins 40 % (accident du travail) ou pension militaire d\'invalidité.', 'Joignez une copie de la carte ou du titre de pension si l\'administration la demande.', () => 'Une demi-part en plus : jusqu\'à <strong>1 807 €</strong> d\'impôt en moins.'],
+        'check-inv2': ['Invalidité du conjoint', 'F', 'Mêmes conditions que pour vous : carte mobilité inclusion invalidité (80 %) ou pension d\'invalidité (40 %).', 'Cumulable avec la case P si vous êtes tous les deux concernés.', () => 'Une demi-part en plus : jusqu\'à <strong>1 807 €</strong> d\'impôt en moins.'],
+        'check-vet': ['Ancien combattant', 'W / S', 'Plus de 74 ans au 31 décembre 2025 et titulaire de la carte du combattant (ou veuf ou veuve de plus de 74 ans d\'un titulaire).', 'Case W pour une personne seule, S pour un couple.', () => 'Une demi-part en plus : jusqu\'à <strong>1 807 €</strong> d\'impôt en moins.'],
+        'check-L': ['Personne seule ayant élevé un enfant', 'L', 'Vous vivez seul(e) et avez élevé seul(e) un enfant pendant au moins 5 ans, alors que vous viviez seul(e). L\'enfant n\'est plus à votre charge.', 'Non cumulable avec les cases P ou W : on ne garde que la plus avantageuse.', () => 'Une demi-part en plus, avantage limité à <strong>1 079 €</strong>.'],
+        'input-income': ['Salaires', '1AJ', 'Le « net imposable » de l\'année, indiqué sur votre bulletin de paie de décembre (cumul annuel).', 'Comparez-le au montant prérempli : primes, indemnités de rupture ou heures sup peuvent y être mal reprises.', () => { const r = quickTmi(); return r === null ? 'Le salaire détermine votre tranche d\'imposition.' : 'Avec ce que vous avez saisi, votre tranche estimée est de <strong>' + pct(r) + '</strong>.'; }],
+        'input-chom': ['Allocations chômage', '1AP', 'Allocations versées par France Travail en 2025 (attestation fiscale dans votre espace personnel).', 'Elles bénéficient aussi des 10 % ou des frais réels : vos frais de recherche d\'emploi (déplacements, envois) sont déductibles aux frais réels.', () => 'Pas de gain direct, mais un montant exact évite de payer trop.'],
+        'input-pension': ['Retraites et pensions', '1AS', 'Retraites de base et complémentaires, pensions d\'invalidité, pensions alimentaires reçues (case 1AO).', 'Additionnez toutes vos caisses, y compris la réversion. L\'abattement de 10 % est automatique : ne le déduisez pas vous-même.', () => 'L\'abattement de 10 % (minimum <strong>454 €</strong>, maximum 4 439 € par foyer) est appliqué automatiquement.'],
+        'input-income-2': ['Salaires du conjoint', '1BJ', 'Le « net imposable » annuel de votre conjoint (bulletin de décembre).', 'Chacun peut choisir séparément entre les 10 % et les frais réels (étape 3).', () => 'Un montant exact évite de payer trop.'],
+        'input-chom-2': ['Chômage du conjoint', '1BP', 'Allocations France Travail perçues par votre conjoint en 2025.', 'Vérifiez avec son attestation fiscale.', () => 'Pas de gain direct.'],
+        'input-pension-2': ['Retraites du conjoint', '1BS', 'Toutes les pensions de votre conjoint.', 'L\'abattement de 10 % est calculé par personne puis plafonné pour le foyer.', () => 'Abattement automatique de 10 %, minimum <strong>454 €</strong>.'],
+        'check-hours': ['Heures supplémentaires', '1GH', 'Heures sup et complémentaires payées en 2025 : elles sont exonérées d\'impôt jusqu\'à 7 500 €.', 'Le montant exonéré figure sur votre bulletin de décembre (ligne « rémunération heures sup exonérée »).', () => gDeduc(1000, 'd\'heures sup correctement exonérées')],
+        'input-hours': ['Montant des heures sup', '1GH', 'Le montant net exonéré indiqué sur votre bulletin de décembre.', 'Au-delà de 7 500 €, l\'excédent est imposable normalement.', () => gDeduc(Math.min(num('input-hours') || 1000, 7500), 'd\'heures sup exonérées')],
+        'check-hours-included': ['Heures sup incluses dans le salaire ?', '1AJ', 'Cochez si le salaire saisi (ou prérempli) contient déjà ces heures sup.', 'C\'est une erreur fréquente de la préremplie : il faut alors retirer ce montant du salaire.', () => gDeduc(Math.min(num('input-hours') || 1000, 7500), 'retirés du salaire')],
+        'check-apprentice': ['Apprenti ou stagiaire', '1AJ', 'Salaire d\'apprenti ou gratification de stage (stage d\'études) : exonéré jusqu\'au SMIC annuel.', 'Déclarez seulement la part au-dessus de <strong>21 622 €</strong>, même si le contrat n\'a duré que quelques mois.', () => 'Jusqu\'à <strong>21 622 €</strong> de rémunération sans impôt : la plupart des apprentis ne paient rien sur leur salaire.'],
+        'check-hours-2': ['Heures sup du conjoint', '1HH', 'Même exonération que pour vous, jusqu\'à 7 500 € par personne.', 'Vérifiez son bulletin de décembre.', () => gDeduc(1000, 'd\'heures sup exonérées')],
+        'input-hours-2': ['Montant des heures sup du conjoint', '1HH', 'Montant exonéré sur son bulletin de décembre.', 'Plafond de 7 500 € par personne.', () => gDeduc(Math.min(num('input-hours-2') || 1000, 7500), 'd\'heures sup exonérées')],
+        'check-hours-included-2': ['Incluses dans son salaire ?', '1BJ', 'Cochez si le salaire de votre conjoint contient déjà ces heures sup.', 'Il faut alors les retirer de son salaire.', () => gDeduc(Math.min(num('input-hours-2') || 1000, 7500), 'retirés du salaire')],
+        'opt-car': ['Voiture ou deux-roues personnel', '1AK', 'Vos trajets domicile-travail sont calculés avec le barème kilométrique officiel.', 'Gardez une preuve de la distance (itinéraire) et de la puissance (carte grise).', () => 'Exemple : 20 km aller, 200 jours, voiture 5 CV = <strong>' + eur(8000 * .357 + 1395) + '</strong> de frais. ' + gDeduc(1000, 'de frais au-dessus des 10 %')],
+        'opt-navigo': ['Transports en commun ou télétravail', '', 'Pas de frais de voiture. Le télétravail et les repas peuvent quand même compter.', 'La part de l\'abonnement payée par l\'employeur n\'est pas déductible.', () => 'Le télétravail rapporte jusqu\'à <strong>626,40 €</strong> de frais déductibles par an.'],
+        'veh-car': ['Voiture', '', 'Barème voitures, de 3 CV à 7 CV et plus.', 'Le barème couvre carburant, entretien, assurance et usure : ne les ajoutez pas en plus.', () => 'Environ 0,53 € à 0,70 € par km jusqu\'à 5 000 km.'],
+        'veh-moto': ['Moto', '', 'Deux-roues de plus de 50 cm³, barème spécifique.', 'La puissance se lit sur la carte grise (case P.6).', () => 'Environ 0,40 € à 0,61 € par km jusqu\'à 3 000 km.'],
+        'veh-cyclo': ['Scooter ou cyclomoteur', '', 'Deux-roues de 50 cm³ ou moins.', 'Pas besoin de puissance fiscale pour ce barème.', () => '0,315 € par km jusqu\'à 3 000 km.'],
+        'input-car-cv': ['Puissance fiscale', '', 'Chevaux fiscaux indiqués en case P.6 de la carte grise.', 'Le barème s\'arrête à 7 CV : au-delà, on applique la ligne « 7 CV et plus ».', () => 'Passer de 4 à 6 CV augmente les frais d\'environ 10 %.'],
+        'input-car-km': ['Distance aller', '', 'Kilomètres entre le domicile et le lieu de travail, pour un aller.', 'Au-delà de <strong>40 km</strong>, seuls 40 km sont retenus, sauf raison valable (cochez la case plus bas).', () => { const k = Math.min(num('input-car-km') || 20, 40); return k + ' km aller sur 200 jours = ' + (k * 400).toLocaleString('fr-FR') + ' km, soit environ <strong>' + eur(kmCost(num('input-car-cv') || 5, k * 400, state.vehicle)) + '</strong> de frais.'; }],
+        'input-car-tolls': ['Péages et parking', '', 'Frais de péage et de stationnement liés au trajet domicile-travail.', 'Gardez les justificatifs (relevés de badge, tickets) pendant 3 ans.', () => gDeduc(num('input-car-tolls') || 500, 'de péages et parking')],
+        'check-car-electric': ['Véhicule électrique', '', 'Voiture ou deux-roues 100 % électrique (pas les hybrides).', 'La majoration s\'applique automatiquement au barème.', () => 'Frais kilométriques majorés de <strong>20 %</strong>.'],
+        'check-car-justified': ['Plus de 40 km justifiés', '', 'Raisons admises : emploi du conjoint, santé, garde d\'enfant, précarité de l\'emploi, difficulté à se loger près du travail.', 'Expliquez la raison dans la zone « mentions expresses » de la déclaration.', () => 'Tous les kilomètres sont retenus, au lieu de 40 km au maximum.'],
+        'input-days-total': ['Jours travaillés', '', 'Nombre de jours réellement travaillés en 2025 (souvent 215 à 228), hors congés, RTT, arrêts maladie.', 'Vérifiez avec votre planning ou vos bulletins de paie.', () => 'Sert à calculer les jours de télétravail.'],
+        'input-days-office': ['Jours sur place', '', 'Jours où vous êtes allé(e) sur votre lieu de travail.', 'C\'est ce nombre qui compte pour les trajets et les repas.', () => 'Chaque jour sur place = un aller-retour + un repas éventuel.'],
+        'check-telework': ['Télétravail', '', 'Les jours non passés sur place sont du télétravail.', 'Si votre employeur vous verse une allocation de télétravail, ajoutez-la à votre salaire.', () => '<strong>2,70 €</strong> par jour, jusqu\'à <strong>626,40 €</strong> par an.'],
+        'check-lunch': ['Repas hors du domicile', '', 'Vous déjeunez sur place ou au restaurant les jours travaillés.', 'Sans justificatif, <strong>5,45 €</strong> par repas. Avec des tickets de caisse, jusqu\'à 15,65 € par repas. Retirez la part de titres-restaurant payée par l\'employeur.', () => '200 repas = <strong>' + eur(200 * 5.45) + '</strong> de frais. ' + gDeduc(1090, 'de frais de repas')],
+        'veh-2': ['Trajet du conjoint', '1BK', 'Moyen de transport de votre conjoint pour aller travailler.', 'Chaque déclarant choisit séparément entre les 10 % et les frais réels.', () => gDeduc(1000, 'de frais au-dessus des 10 %')],
+        'input-cv-2': ['Puissance fiscale', '', 'Case P.6 de la carte grise du véhicule de votre conjoint.', 'Plafonné à 7 CV.', () => ''],
+        'input-km-2': ['Distance aller du conjoint', '', 'Kilomètres domicile-travail pour un aller.', '40 km maximum sauf raison valable.', () => ''],
+        'input-tolls-2': ['Péages et parking du conjoint', '', 'Frais annuels liés au trajet.', 'Gardez les justificatifs.', () => ''],
+        'input-office-2': ['Jours sur place du conjoint', '', 'Jours où votre conjoint est allé travailler sur place.', 'Hors congés, RTT et arrêts maladie.', () => ''],
+        'input-tele-2': ['Jours de télétravail du conjoint', '', '2,70 € par jour, 626,40 € maximum par an.', 'L\'allocation de télétravail de l\'employeur s\'ajoute au salaire.', () => ''],
+        'check-lunch-2': ['Repas du conjoint', '', '5,45 € par repas pris hors du domicile, sans justificatif.', 'Retirez la part de titres-restaurant payée par l\'employeur.', () => ''],
+        'check-electric-2': ['Véhicule électrique', '', 'Frais kilométriques majorés de 20 %.', '100 % électrique uniquement.', () => ''],
+        'check-justified-2': ['Plus de 40 km justifiés', '', 'Emploi de l\'autre conjoint, santé, garde d\'enfant, difficulté à se loger…', 'Expliquez-le en « mentions expresses ».', () => ''],
+        'input-garde-': ['Frais de garde', '7GA', 'Crèche, halte-garderie, assistante maternelle agréée, garderie périscolaire, centre de loisirs (hors repas).', 'Déduisez les aides (complément de libre choix du mode de garde de la CAF). La garde à domicile va plutôt en emploi à domicile.', () => '50 % remboursés, jusqu\'à <strong>1 750 €</strong> par enfant (875 € en garde alternée), <strong>même si vous ne payez pas d\'impôt</strong>.'],
+        'alt-': ['Enfants en garde alternée', '', 'Indiquez combien d\'enfants de cette catégorie vivent en garde alternée.', 'Les autres sont considérés comme vivant à plein temps chez vous.', () => 'Les enfants à plein temps comptent en premier pour les parts, ce qui est plus avantageux.'],
+        'input-interest': ['Intérêts', '2TR', 'Intérêts de comptes à terme, livrets bancaires fiscalisés, PEL de plus de 12 ans, obligations.', 'Livret A, LDDS et LEP sont exonérés : ne les comptez pas.', () => 'Taxés à 12,8 % par défaut. Si votre tranche est de 0 % ou 11 %, l\'option 2OP peut faire baisser l\'impôt.'],
+        'input-dividends': ['Dividendes', '2DC', 'Dividendes d\'actions détenues hors PEA (compte-titres).', 'Avec l\'option 2OP, seuls 60 % sont imposés, et une partie de la CSG est déductible l\'année suivante.', () => { const r = quickTmi(); return 'Pour 1 000 € : 128 € en flat tax contre ' + (r === null ? '66 € (tranche 11 %)' : eur(600 * r) + ' au barème (tranche ' + pct(r) + ')') + '.'; }],
+        'input-don-75': ['Dons aux associations d\'aide aux personnes', '7UD', 'Associations qui fournissent gratuitement repas, soins ou logement (Restos du Cœur, Secours populaire, Fondation pour le logement…), ou qui aident les victimes de violences conjugales.', 'Gardez le reçu fiscal. Les dons ne sont jamais préremplis.', () => '<strong>75 %</strong> remboursés en réduction d\'impôt : 100 € donnés ne coûtent que 25 €.'],
+        'input-don-75b': ['Mêmes dons, depuis le 14 octobre 2025', '7UQ', 'Dons faits entre le 14 octobre et le 31 décembre 2025 à ces mêmes associations.', 'Le plafond à 75 % passe à 2 000 € au total : déclarez-les dans cette case à part.', () => 'Jusqu\'à <strong>1 500 €</strong> de réduction au total avec les dons d\'avant le 14 octobre.'],
+        'input-don-66': ['Autres dons', '7UF', 'Associations d\'intérêt général, fondations, organismes culturels ou scientifiques, dons en ligne avec reçu fiscal.', 'Au-delà de 20 % de votre revenu, l\'excédent est reporté sur les 5 années suivantes.', () => '<strong>66 %</strong> remboursés : 100 € donnés ne coûtent que 34 €.'],
+        'input-domicile': ['Emploi à domicile', '7DB', 'Ménage, repassage, jardinage, soutien scolaire, garde d\'enfants à domicile, aide aux personnes âgées, petit bricolage…', 'Plafonds par activité : jardinage 5 000 €, assistance informatique 3 000 €, petit bricolage 500 €. Avec l\'avance immédiate de l\'Urssaf, déclarez quand même le total.', () => '50 % remboursés <strong>même si vous ne payez pas d\'impôt</strong> : 1 000 € de ménage = <strong>500 €</strong> rendus.'],
+        'input-over65': ['Personnes de plus de 65 ans', '', 'Membres du foyer âgés de plus de 65 ans (vous, votre conjoint ou une personne à charge).', 'Sert uniquement à relever le plafond de l\'emploi à domicile.', () => 'Plafond de dépenses relevé de <strong>1 500 €</strong> par personne (15 000 € maximum).'],
+        'check-domicile-first': ['Première année d\'emploi à domicile', '7DQ', 'Vous n\'aviez jamais employé quelqu\'un à domicile avant 2025.', 'Cochez aussi la case 7DQ sur la déclaration.', () => 'Plafond relevé à <strong>15 000 €</strong> (18 000 € avec les majorations).'],
+        'input-per': ['Plan d\'épargne retraite (PER)', '6NS', 'Versements volontaires faits en 2025 sur un PER individuel.', 'Surtout intéressant si votre tranche est de 30 % ou plus : l\'argent sera imposé à la sortie.', () => gDeduc(num('input-per') || 1000, 'versés sur le PER')],
+        'input-per-2': ['PER du conjoint', '6NT', 'Versements de votre conjoint sur son PER.', 'En couple, la case 6QR permet d\'additionner vos deux plafonds.', () => gDeduc(num('input-per-2') || 1000, 'versés sur le PER')],
+        'input-per-plafond': ['Plafond épargne retraite', '', 'Montant indiqué sur votre avis d\'impôt 2025, rubrique « Plafond épargne retraite ».', 'Il additionne vos plafonds non utilisés des 3 années précédentes : souvent bien plus que le plafond de l\'année.', () => 'Sans lui, l\'outil estime un plafond de 10 % de vos revenus d\'activité (4 637 € minimum).'],
+        'input-pa-maj': ['Pension à un enfant majeur', '6EL', 'Argent versé à un enfant majeur non rattaché à votre foyer, qui en a besoin (études, recherche d\'emploi…).', 'Gardez les preuves de virement. L\'enfant doit déclarer cette somme de son côté.', () => 'Jusqu\'à <strong>6 855 €</strong> déductibles par enfant. ' + gDeduc(Math.min(num('input-pa-maj') || 3000, 6855), 'de pension')],
+        'input-pa-maj-n': ['Nombre d\'enfants majeurs aidés', '6EM', 'Le plafond de 6 855 € s\'applique enfant par enfant.', 'Premier enfant en 6EL, deuxième en 6EM.', () => 'Deux enfants aidés = jusqu\'à <strong>13 710 €</strong> déductibles.'],
+        'input-pa-heb': ['Enfant majeur logé et nourri', '6EL', 'Un enfant majeur vit chez vous sans être rattaché à votre foyer.', 'Forfait sans justificatif. Comparez avec le rattachement (demi-part), qui peut être plus avantageux.', () => '<strong>4 075 €</strong> déductibles par enfant. ' + gDeduc(4075, 'de forfait')],
+        'input-pa-autre': ['Autres pensions alimentaires', '6GU', 'Pension à un ex-conjoint (fixée par le juge), à un enfant mineur vivant chez l\'autre parent, ou à un parent âgé dans le besoin (y compris son EHPAD).', 'Pas pour un enfant en garde alternée ni pour un enfant compté à votre charge.', () => gDeduc(num('input-pa-autre') || 3000, 'de pension')],
+        'input-ehpad': ['EHPAD', '7CD', 'Frais d\'hébergement et de dépendance de vous ou votre conjoint en établissement, aides (APA, APL) déduites.', 'Pour l\'EHPAD d\'un parent, passez plutôt par la pension alimentaire (case 6GU).', () => '25 % de réduction, jusqu\'à <strong>2 500 €</strong> par personne hébergée.'],
+        'input-synd': ['Cotisations syndicales', '7AC', 'Cotisations versées à un syndicat de salariés ou de fonctionnaires (y compris retraités).', 'Si vous choisissez les frais réels, elles vont dans vos frais et non dans cette case.', () => '<strong>66 %</strong> remboursés, même sans impôt à payer (limite : 1 % de vos salaires).'],
+        'input-synd-2': ['Cotisations syndicales du conjoint', '7AE', 'Cotisations syndicales de votre conjoint.', 'Aux frais réels, elles sont incluses dans ses frais.', () => '<strong>66 %</strong> remboursés.']
+    };
+    const helpBox = $('help');
+    let helpKey = null;
+    function helpFor(el) {
+        const id = el.id || '';
+        const key = H[id] ? id : id.startsWith('input-garde-') ? 'input-garde-' : id.startsWith('alt-') ? 'alt-' : null;
+        return key;
+    }
+    function showHelp(key, anchor) {
+        const [title, box, what, tip, gain] = H[key];
+        const g = gain();
+        helpBox.innerHTML = '<div class="h-top"><span class="h-title">' + title + '</span>' + (box ? '<span class="h-case">Case ' + box + '</span>' : '') + '<button class="h-close" aria-label="Fermer" onclick="hideHelp()">×</button></div>'
+            + '<div>' + what + '</div>'
+            + '<div class="h-k">💡 Conseil</div><div>' + tip + '</div>'
+            + (g ? '<div class="h-k">💶 Ce que ça peut rapporter</div><div class="h-gain">' + g + '</div>' : '');
+        helpBox.classList.remove('hidden-help');
+        helpKey = key;
+        // Grand écran : vignette alignée sur le champ, dans la marge à droite du formulaire
+        if (window.innerWidth >= 1100) {
+            const card = document.querySelector('.card').getBoundingClientRect(), a = anchor.getBoundingClientRect();
+            helpBox.style.left = (card.right + window.scrollX + 24) + 'px';
+            const top = a.top + window.scrollY - 12, max = window.scrollY + window.innerHeight - helpBox.offsetHeight - 16;
+            helpBox.style.top = Math.max(window.scrollY + 16, Math.min(top, max)) + 'px';
+        }
+    }
+    function hideHelp() { helpBox.classList.add('hidden-help'); helpKey = null; }
+    // Le champ concerné : l'élément lui-même, ou celui contenu dans le bloc survolé (libellé, case à cocher)
+    function target(e) {
+        const el = e.target.closest('input, select, button, label, .grid-2 > div, .grid-3 > div');
+        if (!el) return null;
+        const field = el.matches('input, select, button') ? el : el.querySelector('input, select, button');
+        return field && helpFor(field) ? { key: helpFor(field), anchor: el.closest('label, .grid-2 > div, .grid-3 > div') || field } : null;
+    }
+    const card = document.querySelector('.card');
+    card.addEventListener('mouseover', e => { const t = target(e); if (t && window.innerWidth >= 1100) showHelp(t.key, t.anchor); });
+    card.addEventListener('focusin', e => { const t = target(e); if (t) showHelp(t.key, t.anchor); });
+    // Le chiffre personnalisé suit la saisie
+    card.addEventListener('input', e => { const t = target(e); if (t && t.key === helpKey) showHelp(t.key, t.anchor); });
+    // Changement d'étape : on range la vignette
+    const baseChange = changeScreen;
+    changeScreen = function (from, to) { hideHelp(); baseChange(from, to); };
+    window.addEventListener('resize', hideHelp);
     </script>
 </body>
 </html>
