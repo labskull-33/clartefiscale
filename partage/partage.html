@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- Image de partage (LinkedIn, Facebook, X) : 1200 × 630, dans le style du visuel carré des réseaux.
+     Rendue en PNG (Chromium sans fenêtre, 1200 × 630) → partage.png à la racine, envoyée avec index.html. -->
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1200px; height: 630px; overflow: hidden; font-family: "Segoe UI", -apple-system, Roboto, sans-serif; color: #0f172a;
+    background: radial-gradient(900px 520px at 100% 0%, #e0e7ff 0%, rgba(224, 231, 255, 0) 60%), #f8fafc; }
+  .page { position: relative; height: 100%; padding: 56px 64px 52px; display: grid; grid-template-columns: 1fr 470px; column-gap: 44px; }
+  .marque { display: flex; align-items: center; gap: 14px; font-size: 34px; font-weight: 700; letter-spacing: -0.01em; }
+  .marque .boule { font-size: 36px; }
+  .violet { color: #4338ca; }
+  h1 { margin-top: 40px; font-size: 57px; line-height: 1.02; font-weight: 900; letter-spacing: -0.035em; }
+  .accroche { margin-top: 26px; max-width: 540px; font-size: 25px; line-height: 1.4; color: #475569; text-wrap: pretty; }
+  .pastilles { position: absolute; left: 64px; bottom: 52px; display: flex; gap: 12px; }
+  .pastille { padding: 11px 20px; border-radius: 999px; font-size: 21px; font-weight: 600; color: #fff; background: #4338ca; }
+  .pastille.menthe { background: #10b981; }
+  .droite { display: flex; flex-direction: column; justify-content: space-between; }
+  .bareme { align-self: flex-end; padding: 10px 20px; border-radius: 999px; background: #fff; border: 1px solid #e2e8f0; font-size: 20px; font-weight: 600; color: #334155; }
+  .carte { background: #fff; border: 1px solid #e2e8f0; border-radius: 26px; padding: 24px; box-shadow: 0 24px 50px -24px rgba(49, 46, 129, 0.35); }
+  .gain { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 20px 24px; border-radius: 16px; background: #ecfdf5; border: 1.5px solid #a7f3d0; color: #065f46; }
+  .gain small { font-size: 18px; font-weight: 500; white-space: nowrap; }
+  .gain strong { white-space: nowrap; font-size: 38px; line-height: 1; font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .ligne { display: flex; align-items: center; gap: 14px; margin-top: 16px; font-size: 19px; white-space: nowrap; }
+  .case { font-family: "Segoe UI", sans-serif; font-weight: 700; font-size: 18px; color: #4338ca; background: #e0e7ff; border-radius: 7px; padding: 4px 10px; min-width: 58px; text-align: center; }
+  .ligne .ok { margin-left: auto; color: #10b981; font-weight: 700; font-size: 24px; }
+  .adresse { align-self: flex-end; font-size: 25px; font-weight: 700; color: #4338ca; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div>
+      <div class="marque"><span class="boule">🔮</span><span>Clarté<span class="violet">Fiscale</span></span></div>
+      <h1>Payez vos impôts,<br><span class="violet">juste vos impôts.</span><br>Pas un euro de plus.</h1>
+      <p class="accroche">Les cases que la déclaration préremplie oublie, avec le gain estimé.</p>
+      <div class="pastilles">
+        <span class="pastille">Gratuit</span>
+        <span class="pastille">2 minutes</span>
+        <span class="pastille menthe">🔒 0 donnée envoyée</span>
+      </div>
+    </div>
+    <div class="droite">
+      <span class="bareme">Barème 2026</span>
+      <div class="carte">
+        <div class="gain"><small>Exemple : couple, 2 enfants</small><strong>2 036 €</strong></div>
+        <div class="ligne"><span class="case">7GA</span>Frais de crèche oubliés<span class="ok">✓</span></div>
+        <div class="ligne"><span class="case">7EA</span>Réduction collégien jamais préremplie<span class="ok">✓</span></div>
+        <div class="ligne"><span class="case">7UD</span>Dons comptés à 75 %<span class="ok">✓</span></div>
+      </div>
+      <span class="adresse">davidvuillet.fr/clartefiscale</span>
+    </div>
+  </div>
+</body>
+</html>
